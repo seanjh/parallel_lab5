@@ -122,3 +122,6 @@ target/
 
 # Debug files
 *.dSYM/
+
+*.ppm
+*.pnm
