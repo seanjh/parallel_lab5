@@ -1,5 +1,6 @@
 # Compiled Object files
 convolve_test
+filter_image
 *.slo
 *.lo
 *.o
