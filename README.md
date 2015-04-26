@@ -2,7 +2,7 @@
 
 
 ## Stencils
-Image stencils are all represented in [Netbpm format](https://en.wikipedia.org/wiki/Netpbm_format), specifically as Portable GrayMap ASCII (P2). In these PGMs, the stencil values range from 0-255. These values are translated to a range between -8 and 8 before the stencil is applied to the image (see below). Stencils are also normalized using one of two methods. In cases where the sum of the stencil values (converted from the PGM values) is not 0, then
+Image stencils are all represented in [Netbpm format](https://en.wikipedia.org/wiki/Netpbm_format), specifically as Portable GrayMap ASCII (P2). In these PGMs, the stencil values range from 0-255. These values are translated to a range between -8 and 8 before the stencil is applied to the image (see below). Stencils are also normalized using one of two methods. In cases where the sum of the stencil values (converted from the PGM values) is not 0, then the stencil values are all normalized to sum up to 1.0. When the stencil values (before normalization) sum up to 0, then all the negative values are normalized to sum up to -1.0, and the positive values are normalized to sum up to 1.0.
 
 | Stencil Values    | PGM Value   |
 |:-----------------:|:-----------:|
