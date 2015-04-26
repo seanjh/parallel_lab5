@@ -87,9 +87,7 @@ docs/_build/
 # PyBuilder
 target/
 
-# PyCharm
-.idea
-
+### C
 
 # Object files
 *.o
@@ -124,5 +122,10 @@ target/
 # Debug files
 *.dSYM/
 
+#### Project specific
 *.ppm
 *.pnm
+filtered/
+
+# PyCharm
+.idea

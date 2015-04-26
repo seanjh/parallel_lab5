@@ -37,33 +37,24 @@ def is_ppm(filename):
 
 
 def convert_to_ppm(command, infile, outfile):
-    print 'netbpm command: %s, infile: %s, outfile: %s' % (command, infile, outfile)
+    # print 'netbpm command: %s, infile: %s, outfile: %s' % (command, infile, outfile)
     with open(outfile, 'wb') as fh:
         command_args = [command, infile]
         ppm_p = subprocess.Popen(command_args, stdout=subprocess.PIPE)
-        # plain_p = subprocess.Popen(['pnmtoplainpnm'], stdin=ppm_p.stdout, stdout=outfile)
         plain_p = subprocess.Popen(['pnmtopnm', '-plain'], stdin=ppm_p.stdout, stdout=fh)
         plain_p.wait()
-        # output = subprocess.check_output(['pnmtoplainpnm'], stdout=outfile)
-        # command_args = [command, infile]
-        # out, err = subprocess.check_output(command_args)
-        # outfile.write(out)
-        # p = Popen(command_args, )
-        # subprocess.call(command_args)
 
 
 def convert_to_original(command, infile, outfile):
-    print 'netbpm command: %s, infile: %s, outfile: %s' % (command, infile, outfile)
+    # print 'netbpm command: %s, infile: %s, outfile: %s' % (command, infile, outfile)
     with open(outfile, 'wb') as fh:
         command_args = [command, infile]
         ppm_p = subprocess.Popen(command_args, stdout=fh)
         ppm_p.wait()
-        # orig_p = subprocess.Popen([], stdin=ppm_p.stdout, stdout=fh)
-        # orig_p.wait()
 
 
 def output_pnm_filename(diretory, input_file, old_extension, new_extension):
-    print 'directory %s, input %s, extension %s' % (diretory, input_file, new_extension)
+    # print 'directory %s, input %s, extension %s' % (diretory, input_file, new_extension)
     parts = input_file.split('.')
     parts.pop()
     filename = ''.join([''.join(parts), '~~', old_extension, '~~', '.', new_extension])
@@ -72,13 +63,10 @@ def output_pnm_filename(diretory, input_file, old_extension, new_extension):
 
 def output_original_filename(directory, filename):
     # stuff~~jpg~~.ppm --> [stuff, jpg, .ppm]
-    # print 'FILENAME: %s' % filename
     parts = filename.split('~~')
     # print 'PARTS: %s' % parts
     ppm_ext = parts.pop()
-    # print 'Ditching %s ' % parts.pop()  # ppm extension
     original_extension = parts.pop()
-    # print 'Original extension %s' % original_extension
     parts.insert(0, ''.join([TIMESTAMP, '-']))
     root_filename = ''.join(parts)
     full_filname = ''.join([root_filename, '.', original_extension])
@@ -142,4 +130,3 @@ if __name__ == '__main__':
         files_to_original(args.directory)
     else:
         raise Exception('WTF')
-    # convert(args.directory)
