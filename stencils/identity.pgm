@@ -1,0 +1,15 @@
+P2
+# Identity
+# https://en.wikipedia.org/wiki/Kernel_(image_processing)#Details
+# Should leave the image unaltered
+#
+# Original stencil
+# 0 0 0
+# 0 1 0
+# 0 0 0
+#
+3 3
+255
+128 128 128
+128 143 128
+128 128 128

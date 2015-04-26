@@ -1,0 +1,14 @@
+P2
+# Gaussian blur
+# https://en.wikipedia.org/wiki/Kernel_(image_processing)#Details
+#
+# Original stencil
+# 1 2 1
+# 2 4 2
+# 1 2 1
+#
+3 3
+255
+143 159 143
+159 191 159
+143 159 143
