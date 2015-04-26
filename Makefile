@@ -5,7 +5,7 @@ INCDIR=./src
 
 # LIBS =-lgmpxx -lgmp
 CXX_FLAGS =-Wc++11-extensions
-CXX_ARGS=-std=c++11 -Wall
+CXX_ARGS=-std=c++11 -Wall -fopenmp
 
 _CONVOLVE_TEST_OBJ = Array2d.o convolve.o convolve_test.o PPM.o
 
