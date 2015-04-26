@@ -3,8 +3,6 @@ import os
 
 import numpy as np
 
-
-
 SAMPLES_PER_PIXEL = 3
 IMAGE_PATH = os.path.join('..', 'img')
 
@@ -95,7 +93,7 @@ def convert_ppm_raster(fh, max_val):
             assert int(sample) <= max_val
             samples.append(int(sample))
             if len(samples) == SAMPLES_PER_PIXEL:
-                sample_doubles = [float(val) / float(max_val) for val in samples]
+                sample_doubles = [normalize_sample(val, max_val) for val in samples]
                 pixel = Pixel(sample_doubles[0], sample_doubles[1], sample_doubles[2])
                 samples = list()
                 yield pixel
@@ -142,9 +140,15 @@ def convert_ppm_rgb(filename):
     return image_red, image_green, image_blue
 
 
+def normalize_sample(sample, max_value):
+    return float(sample) / float(max_value)
+
+
 def apply_filter(image_ppm, stencil_pgm, iterations):
     red_array, green_array, blue_array = convert_ppm_rgb(image_ppm)
-    # apply stencil
+    # for each iteration
+    #   preallocate work
+    #   apply stencil
     # reverse normalize
 
 if __name__ == '__main__':

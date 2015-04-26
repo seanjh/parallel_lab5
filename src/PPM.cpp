@@ -11,12 +11,10 @@ PPM::PPM(char *fileName)
 {
 	std::ifstream file;
 	file.open(fileName);
-
-
 }
 
 PPM::PPM(int r, int c, int m, std::shared_ptr<Array2d> redArray, std::shared_ptr<Array2d> greenArray, std::shared_ptr<Array2d> blueArray) :
-rows(r), cols(c), maxVal(m), red(redArray), green(greenArray), blue(blueArray)
+maxVal(m), rows(r), cols(c), red(redArray), green(greenArray), blue(blueArray)
 {
 
 }

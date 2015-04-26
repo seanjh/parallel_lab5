@@ -1,10 +1,11 @@
-CXX=mpic++
+CXX=g++
 ODIR=./obj
 SRCDIR=./src
 INCDIR=./src
 
 # LIBS =-lgmpxx -lgmp
 CXX_FLAGS =-Wc++11-extensions
+CXX_ARGS=-std=c++11 -Wall
 
 _CONVOLVE_TEST_OBJ = Array2d.o convolve.o convolve_test.o PPM.o
 
@@ -14,10 +15,10 @@ obj:
 	mkdir -p $@
 
 $(ODIR)/%.o: $(SRCDIR)/%.cpp | obj
-	$(CXX) -std=c++11 -I$(INCDIR) -c -o $@ $<
+	$(CXX) $(CXX_ARGS) -I$(INCDIR) -c -o $@ $<
 
 convolve_test: $(CONVOLVE_TEST_OBJ)
-	$(CXX) -std=c++11 -o $@ $^ $(LIBS)
+	$(CXX) $(CXX_ARGS) -o $@ $^ $(LIBS)
 
 .PHONY: clean
 

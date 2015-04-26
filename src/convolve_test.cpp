@@ -1,6 +1,7 @@
 #include "Array2d.hpp"
 #include <iostream>
 #include <assert.h>
+#include <memory>
 
 extern std::shared_ptr<Array2d> convolve(std::shared_ptr<Array2d> source, std::shared_ptr<Array2d> kernel, bool pad = true);
 
