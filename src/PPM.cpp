@@ -1,7 +1,7 @@
-#include "PPM.hpp"
 #include <fstream>
-// #include <ifstream>
 #include <memory>
+
+#include "PPM.hpp"
 
 #define CHARACTERS_PER_PIXEL 3 + 1 + 3 + 1 + 3 + 1
 #define MAX_CHARACTERS_PER_LINE 70-1

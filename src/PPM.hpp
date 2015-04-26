@@ -1,3 +1,6 @@
+#ifndef _PPM_H
+#define _PPM_H
+
 #include "Array2d.hpp"
 #include <memory>
 
@@ -6,7 +9,7 @@ public:
 	PPM(char *fileName);
 	PPM(int rows, int cols, int maxVal, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>);
 	~PPM();
-	
+
 	void write(char *fileName);
 
 	// double get(int row, int col);
@@ -31,3 +34,5 @@ private:
 
 	std::shared_ptr<std::string> outputPixel(int row, int col);
 };
+
+#endif /* _PPM_H */

@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <memory>
 
+#include "PNM.hpp"
+
 static void show_usage(std::string name)
 {
   std::cerr << "Usage: " << name << " [options] image_ppm stencil_pgm iterations\n"
@@ -19,6 +21,8 @@ int main(int argc, char *argv[])
   for (int i=1; i< argc; i++) {
     //
   }
+
+  PNM stencil ("test.txt");
 
   // Parse CLI arguments
   // Parse PGM stencil
