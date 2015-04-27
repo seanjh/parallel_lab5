@@ -67,8 +67,8 @@ void Stencil::parse_stencil_line(const std::string& line, const int row)
   std::size_t index = line.find_first_of(whitespace);
   while (index != std::string::npos)
   {
+    std::cout << "Whitespace at " << index << "\n";
     if (!isspace(line.at(index + 1))) {
-      std::cout << "Whitespace at " << index << "\n";
       value = std::stod(line.substr(last_index, index - last_index));
       std::cout << "New value from line(" << last_index << "," <<  index - last_index << ") " << value << "\n";
       kernel->set(value, row, column++);

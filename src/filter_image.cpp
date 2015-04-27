@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Stencil.hpp"
-#include "PPM.hpp"
+#include "Image.hpp"
 
 typedef struct _FilterArguments {
   std::string image_filename;
@@ -79,10 +79,9 @@ int main(int argc, char* argv[])
   // Parse PGM stencil
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
-
   // Parse PPM image
-  // auto image = std::make_shared<Image>(args->stencil_filename);
-  // image->parse();
+  auto image = std::make_shared<Image>(args->image_filename);
+  image->parse();
 
 
   // for each iteration

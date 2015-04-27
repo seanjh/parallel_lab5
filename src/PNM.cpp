@@ -106,13 +106,13 @@ int PNM::parse_max_value(const std::string& str)
 
 bool PNM::is_comment_line(const std::string& str)
 {
-  return str.at(0) == '#';
+  return str.size() > 0 && str.at(0) == '#';
 }
 
 bool PNM::is_blank_line(const std::string& str)
 {
   char c;
-  for (size_t i=0; i < str.length(); i++) {
+  for (size_t i=0; i < str.size(); i++) {
     c = str.at(i);
     if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == 0)
       continue;
