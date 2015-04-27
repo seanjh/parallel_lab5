@@ -1,8 +1,10 @@
 #ifndef _PPM_H
 #define _PPM_H
 
-#include "Array2d.hpp"
 #include <memory>
+#include <string>
+
+#include "Array2d.hpp"
 
 class PPM {
 public:

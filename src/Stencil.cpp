@@ -1,5 +1,7 @@
 #include <cassert>
+#include <cctype>
 #include <cmath>
+#include <cstddef>
 
 #include "Stencil.hpp"
 
@@ -56,34 +58,29 @@ void Stencil::parse_body(std::ifstream& infile)
 
 void Stencil::parse_stencil_line(const std::string& line, const int row)
 {
-  // std::cout << "Body line is " << line << std::endl;
+  std::cout << "Body line is " << line << std::endl;
+  const std::string whitespace ("\t\n\r ") ;
 
   int column = 0;
-  int line_index = 0;
-  char c;
   double value;
-  size_t position;
-  for (position=0; position < line.size(); position++) {
-    c = line.at(position);
-    if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-      value = std::stod(line.substr(line_index, position - line_index));
-      line_index = position + 1;
-
-      // std::cout << "Updating stencil (col=" << column << ", row=" << row << ") to " << value << "\n";
-
-      kernel->set(value, row, column);
-      column++;
+  std::size_t last_index = 0;
+  std::size_t index = line.find_first_of(whitespace);
+  while (index != std::string::npos)
+  {
+    if (!isspace(line.at(index + 1))) {
+      std::cout << "Whitespace at " << index << "\n";
+      value = std::stod(line.substr(last_index, index - last_index));
+      std::cout << "New value from line(" << last_index << "," <<  index - last_index << ") " << value << "\n";
+      kernel->set(value, row, column++);
+      last_index = index;
     }
+    index = line.find_first_of(whitespace, index + 1);
   }
 
-  // std::cout << "line_index is " << line_index << " column is " << column << " c is " << c << "\n";
-  // std::cout << "line.size() is " << line.size() <<  " position is " << position << "\n";
-
-  if (column < columns()) {
-    value = std::stod(line.substr(line_index, position - line_index));
-    // std::cout << "Updating stencil (col=" << column << ", row=" << row << ") to " << value << "\n";
-    kernel->set(value, row, column);
-  }
+  // Parse the final value on the line
+  value = std::stod(line.substr(last_index, line.size() - last_index));
+  std::cout << "New value from line(" << last_index << "," <<  line.size() << ") " << value << "\n";
+  kernel->set(value, row, column);
 }
 
 void Stencil::normalize()

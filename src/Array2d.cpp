@@ -1,6 +1,7 @@
-#include "Array2d.hpp"
 #include <iostream>
-#include <assert.h>
+#include <cassert>
+
+#include "Array2d.hpp"
 
 Array2d::Array2d(int r, int c) : rows(r), cols(c) {
 	array = new double*[rows];

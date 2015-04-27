@@ -69,20 +69,6 @@ void PNM::parse_header(std::ifstream& infile)
 void PNM::parse_body(std::ifstream& infile)
 {
   std::cout << "PNM (Base class) PARSE BODY\n";
-  // std::cout << "BEGINNING TO PARSE BODY\n";
-
-  // std::string line;
-  // while ( getline (infile, line) ) {
-  //   if (is_comment_line(line) || is_blank_line(line)) {
-  //     std::cout << "Skipping line - " << line << "\n";
-  //     continue;
-  //   } else {
-  //     // TODO
-  //     std::cout << "Body line: " << line << "\n";
-  //   }
-  // }
-
-  // std::cout << "FINISHED PARSING BODY\n";
 }
 
 int PNM::parse_magic_number(const std::string& str)
