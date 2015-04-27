@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <omp.h>
 
 #include "Stencil.hpp"
 #include "Image.hpp"
@@ -80,8 +81,13 @@ int main(int argc, char* argv[])
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
   // Parse PPM image
+  // EXTEND
   auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
+
+  auto image2 = std::make_shared<Image>(*image);
+  std::cout << "Filename " << image2->source_filename() << " magic number " << image2->magic_number() <<
+    " columns " << image2->columns() << " rows " << image2->rows() << " max value " << image2->max_value() << "\n";
 
 
   // for each iteration

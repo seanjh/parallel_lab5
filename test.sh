@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-IMAGE="./img/PIA17944_Mcam-SOL538-WB-full~~jpg~~.ppm"
+IMAGE="./img/doge~~jpg~~.ppm"
 STENCIL="./stencils/gaussian.pgm"
-ITER=1
+ITER=2
 
 # echo "Filtering " $IMAGE " with " $STENCIL " for " $ITER " iterations."
 ./filter_image $IMAGE $STENCIL $ITER

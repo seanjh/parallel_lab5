@@ -73,7 +73,7 @@ std::shared_ptr<Array2d> convolve(std::shared_ptr<Array2d> source, std::shared_p
 				inputArray->set(source->get(i, j), i+rowOffset, j+colOffset);
 
 	}
-	
+
 	// for (int i=(kernelKVal-1); i<(source->rows-(kernelKVal-1)); i++)
 	// {
 	// 	for (int j=(kernelKVal-1); j<(source->cols-(kernelKVal-1)); j++)
@@ -131,5 +131,5 @@ std::shared_ptr<Array2d> convolve(std::shared_ptr<Array2d> source, std::shared_p
 	// {
 	// 	return outputArray;
 	// }
-		
+
 }

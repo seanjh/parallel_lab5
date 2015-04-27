@@ -1,4 +1,4 @@
-CXX=g++
+CXX=g++5
 ODIR=./obj
 SRCDIR=./src
 INCDIR=./src

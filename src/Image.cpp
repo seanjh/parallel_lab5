@@ -1,5 +1,4 @@
 #include <fstream>
-#include <memory>
 #include <cassert>
 #include <cctype>
 #include <stdexcept>
@@ -14,10 +13,31 @@ Image::Image(const std::string& filename) : PNM(filename)
 {
 }
 
-// PPM::PPM(int r, int c, int m, std::sharedptr<Array2d> redArray, std::sharedptr<Array2d> greenArray, std::sharedptr<Array2d> blueArray) :
-// maxVal(m), rows(r), cols(c), red(redArray), green(greenArray), blue(blueArray)
-// {
-// }
+Image::Image(const Image &img) :
+  Image(
+    img.magic_number(), img.rows(), img.columns(), img.max_value(),
+    img.red_pixels(), img.blue_pixels(), img.green_pixels()
+  )
+{
+  std::cout << "Making a copy of image\n";
+  // Intentionally blank
+}
+
+Image::Image(
+  int magic_val, int row_count, int col_count, int max_val,
+  std::shared_ptr<Array2d> red_a,
+  std::shared_ptr<Array2d> blue_a,
+  std::shared_ptr<Array2d> green_a
+  ) :
+  PNM(magic_val, row_count, col_count, max_val)
+{
+  std::cout << "Making a new image from parameters\n";
+  // Get a copy of each color array
+  this->red = std::make_shared<Array2d>(*red_a);
+  this->green = std::make_shared<Array2d>(*blue_a);
+  this->blue = std::make_shared<Array2d>(*green_a);
+}
+
 
 Image::~Image()
 {
@@ -123,7 +143,7 @@ void Image::set_sample_value(const double value, int &sample, int &row, int &col
   sample = (sample + 1) % 3;
 }
 
-void Image::save(const std::string filename)
+void Image::save(const std::string& filename)
 {
   std::ofstream file;
   file.open(filename);

@@ -10,12 +10,13 @@
 class Image : public PNM {
 public:
   Image(const std::string&);
+  Image(const Image&);
+  Image(int, int, int, int, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>);
   ~Image();
-  // PPM(int rows, int cols, int maxVal, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>);
 
   void parse() override;
 
-  void save(std::string filename);
+  void save(const std::string& filename);
 
   // double get(int row, int col);
   // void set(double val, int row, int col);
@@ -29,6 +30,7 @@ protected:
   void parse_body(std::ifstream&) override;
 
 private:
+  // rows, cols, max_value, red, green, blue
   std::shared_ptr<Array2d> red;
   std::shared_ptr<Array2d> green;
   std::shared_ptr<Array2d> blue;

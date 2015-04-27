@@ -29,6 +29,7 @@ public:
   virtual ~PNM();
 
 protected:
+  PNM(int, int, int, int);
   void parse_header(std::ifstream&);
   virtual void parse_body(std::ifstream&);
 
