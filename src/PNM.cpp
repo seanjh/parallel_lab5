@@ -1,29 +1,27 @@
 #include <stdlib.h>
-#include <iostream>
-#include <fstream>
 
 #include "PNM.hpp"
 
-PNM::PNM(const std::string& filename) : source_filename(filename)
+PNM::PNM(const std::string& filename) : source_filename_(filename)
 {
-  parse_source_file();
+  // source_filename = std::make_shared<std::string>(filename);
 }
 
-void PNM::parse_source_file()
+void PNM::parse()
 {
-  std::ifstream infile (source_filename);
+  std::ifstream infile (source_filename());
   if (infile.is_open()) {
-    parse_header(infile);
-    parse_body(infile);
+    this->parse_header(infile);
+    this->parse_body(infile);
     infile.close();
   } else{
-    std::cerr << "Unable to open file " << source_filename << "\n";
+    std::cerr << "Unable to open file " << source_filename() << "\n";
   }
 }
 
 PNM::~PNM()
 {
-    std::cout << "Goodbye " << source_filename << "\n";
+    // std::cout << "Cya PNM " << source_filename() << "\n";
 }
 
 void PNM::parse_header(std::ifstream& infile)
@@ -36,11 +34,11 @@ void PNM::parse_header(std::ifstream& infile)
 
   while ( line_number < 3 && getline (infile, line) ) {
     if (is_comment_line(line) || is_blank_line(line)) {
-      std::cout << "Skipping line - " << line << "\n";
+      // std::cout << "Skipping line - " << line << "\n";
       continue;
     } else {
       // TODO
-      std::cout << "Header line: " << line << "\n";
+      // std::cout << "Header line: " << line << "\n";
       switch (line_number) {
         case 0:
           // Magic number line (e.g., "P2\n")
@@ -68,12 +66,31 @@ void PNM::parse_header(std::ifstream& infile)
   std::cout << "FINISHED PARSING HEADER\n";
 }
 
-inline int PNM::parse_magic_number(const std::string& str)
+void PNM::parse_body(std::ifstream& infile)
+{
+  std::cout << "PNM (Base class) PARSE BODY\n";
+  // std::cout << "BEGINNING TO PARSE BODY\n";
+
+  // std::string line;
+  // while ( getline (infile, line) ) {
+  //   if (is_comment_line(line) || is_blank_line(line)) {
+  //     std::cout << "Skipping line - " << line << "\n";
+  //     continue;
+  //   } else {
+  //     // TODO
+  //     std::cout << "Body line: " << line << "\n";
+  //   }
+  // }
+
+  // std::cout << "FINISHED PARSING BODY\n";
+}
+
+int PNM::parse_magic_number(const std::string& str)
 {
   return std::stoi(str.substr(1, 1));
 }
 
-inline dimensions PNM::parse_dimensions(const std::string& str)
+dimensions PNM::parse_dimensions(const std::string& str)
 {
   int whitespace_index = 0;
   char c;
@@ -96,35 +113,17 @@ inline dimensions PNM::parse_dimensions(const std::string& str)
   return d;
 }
 
-inline int PNM::parse_max_value(const std::string& str)
+int PNM::parse_max_value(const std::string& str)
 {
   return std::stoi(str);
 }
 
-void PNM::parse_body(std::ifstream& infile)
-{
-  std::cout << "BEGINNING TO PARSE BODY\n";
-
-  std::string line;
-  while ( getline (infile, line) ) {
-    if (is_comment_line(line) || is_blank_line(line)) {
-      std::cout << "Skipping line - " << line << "\n";
-      continue;
-    } else {
-      // TODO
-      std::cout << "Body line: " << line << "\n";
-    }
-  }
-
-  std::cout << "FINISHED PARSING BODY\n";
-}
-
-inline bool PNM::is_comment_line(const std::string& str)
+bool PNM::is_comment_line(const std::string& str)
 {
   return str.at(0) == '#';
 }
 
-inline bool PNM::is_blank_line(const std::string& str)
+bool PNM::is_blank_line(const std::string& str)
 {
   char c;
   for (size_t i=0; i < str.length(); i++) {

@@ -21,7 +21,6 @@ maxVal(m), rows(r), cols(c), red(redArray), green(greenArray), blue(blueArray)
 
 PPM::~PPM()
 {
-
 }
 
 unsigned char convert(double val)

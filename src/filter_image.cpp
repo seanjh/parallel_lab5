@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <memory>
 
-#include "PNM.hpp"
+#include "Stencil.hpp"
 
 static void show_usage(std::string name)
 {
@@ -22,7 +22,9 @@ int main(int argc, char *argv[])
     //
   }
 
-  PNM stencil ("test.txt");
+  std::shared_ptr<Stencil> filter (new Stencil("./stencils/edge.pgm"));
+  filter->parse();
+  // filter->print_kernel();
 
   // Parse CLI arguments
   // Parse PGM stencil
