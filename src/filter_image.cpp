@@ -35,7 +35,7 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
   std::string argument;
   for (int i = 1; i < argc; i++) {
     argument = argv[i];
-    std::cout << "Arg[" << i << "] " << argument << "\n";
+    // std::cout << "Arg[" << i << "] " << argument << "\n";
     if (argument == "-h" || argument == "--help") {
       show_usage(argv[0]);
       exit(EXIT_SUCCESS);
@@ -60,10 +60,10 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
     }
   }
 
-  std::cout << "Image filename: " << args->image_filename << "\n";
-  std::cout << "Stencil filename: " << args->stencil_filename << "\n";
-  std::cout << "Iterations: " << args->iterations << "\n";
-  std::cout << "Threads: " << args->threads << "\n";
+  // std::cout << "Image filename: " << args->image_filename << "\n";
+  // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
+  // std::cout << "Iterations: " << args->iterations << "\n";
+  // std::cout << "Threads: " << args->threads << "\n";
   return args;
 }
 
@@ -81,14 +81,11 @@ int main(int argc, char* argv[])
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
   // Parse PPM image
-  // EXTEND
   auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
   image->parse();
 
+  // Make a copy
   auto image2 = std::make_shared<Image>(*image);
-  std::cout << "Filename " << image2->source_filename() << " magic number " << image2->magic_number() <<
-    " columns " << image2->columns() << " rows " << image2->rows() << " max value " << image2->max_value() << "\n";
-
 
   // for each iteration
   //  preallocate

@@ -32,7 +32,7 @@ PNM::~PNM()
 
 void PNM::parse_header(std::ifstream& infile)
 {
-  std::cout << "BEGINNING TO PARSE HEADER\n";
+  // std::cout << "BEGINNING TO PARSE HEADER\n";
   std::string line;
   int line_number = 0;
   int number;
@@ -69,12 +69,12 @@ void PNM::parse_header(std::ifstream& infile)
     }
   }
 
-  std::cout << "FINISHED PARSING HEADER\n";
+  // std::cout << "FINISHED PARSING HEADER\n";
 }
 
 void PNM::parse_body(std::ifstream& infile)
 {
-  std::cout << "PNM (Base class) PARSE BODY\n";
+  // std::cout << "PNM (Base class) PARSE BODY\n";
 }
 
 int PNM::parse_magic_number(const std::string& str)
@@ -100,7 +100,7 @@ dimensions PNM::parse_dimensions(const std::string& str)
 
   d.columns = std::stoi(col_str);
   d.rows = std::stoi(row_str);
-  std::cout << "columns: " << d.columns  << ", rows: " << d.rows << "\n";
+  // std::cout << "columns: " << d.columns  << ", rows: " << d.rows << "\n";
 
   return d;
 }

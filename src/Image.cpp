@@ -67,9 +67,9 @@ void Image::calcuate_offsets()
     first_column_ = col_padding;
     last_row_ = rows() - 1 + row_padding;
     last_column_ = columns() - 1 + col_padding;
-    std::cout << "Row padding " << row_padding << " Col padding " << col_padding << "\n";
-    std::cout << "First Row " << first_row_ << " First Column " << first_column_ << "\n";
-    std::cout << "Last Row " << last_row_ << " Last Column " << last_column_ << "\n";
+    // std::cout << "Row padding " << row_padding << " Col padding " << col_padding << "\n";
+    // std::cout << "First Row " << first_row_ << " First Column " << first_column_ << "\n";
+    // std::cout << "Last Row " << last_row_ << " Last Column " << last_column_ << "\n";
 
   } else {
     // No image padding needed
@@ -107,7 +107,7 @@ void Image::parse()
 
 void Image::parse_body(std::ifstream& infile)
 {
-  std::cout << "STENCIL BEGINNING TO PARSE BODY\n";
+  // std::cout << "IMAGE: BEGINNING TO PARSE BODY\n";
 
   std::string line;
 
@@ -122,12 +122,12 @@ void Image::parse_body(std::ifstream& infile)
     }
   }
 
-  std::cout << "FINISHED PARSING STENCIL BODY\n";
+  // std::cout << "IMAGE: FINISHED PARSING BODY\n";
 }
 
 void Image::parse_image_line(const std::string& line, int &row, int &column)
 {
-  std::cout << "Body line is " << line << std::endl;
+  // std::cout << "Body line is " << line << std::endl;
   const std::string whitespace ("\t\n\r ") ;
 
   int sample = 0;
@@ -143,7 +143,7 @@ void Image::parse_image_line(const std::string& line, int &row, int &column)
     }
 
     value = std::stod(line.substr(last_index, index - last_index));
-    std::cout << "VALUE " << value << " value from line at " << last_index << ", len " <<  index - last_index << "\n";
+    // std::cout << "VALUE " << value << " value from line at " << last_index << ", len " <<  index - last_index << "\n";
     set_sample_value(value, sample, row, column);
     last_index = index;
     index = line.find_first_of(whitespace, index);
@@ -154,29 +154,30 @@ void Image::parse_image_line(const std::string& line, int &row, int &column)
 
 void Image::set_sample_value(const double value, int &sample, int &row, int &column)
 {
-  std::cout << "Sample " << sample << " Row " << row << " Column " << column << "\n";
+  // std::cout << "Sample " << sample << " Row " << row << " Column " << column << "\n";
   assert(sample < 3);
   assert(row <= last_row_);
   assert(column <= last_column_);
+  assert(value < max_value() + 1);
 
   switch (sample) {
     case 0:
       // RED
-      std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
       red->set(value, row, column);
       break;
     case 1:
       // GREEN
-      std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
       green->set(value, row, column);
       break;
     case 2:
       // BLUE
-      std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
       blue->set(value, row, column);
 
       if (column == last_column_) {
-        std::cout << "Starting a new ROW\n";
+        // std::cout << "Starting a new ROW\n";
         // Start a new row here
         row++;
       }
@@ -188,12 +189,12 @@ void Image::set_sample_value(const double value, int &sample, int &row, int &col
   sample = (sample + 1) % 3;
 }
 
-void Image::save(const std::string& filename)
+void Image::save(const std::string& filename) const
 {
   std::ofstream file;
   file.open(filename);
 
-  file << "P3" << std::endl;
+  file << "P" << magic_number() << std::endl;
 
   file << columns() << " " << rows() << std::endl;
 
@@ -202,11 +203,9 @@ void Image::save(const std::string& filename)
 
   int pixelCount = 0;
   std::string buff = std::string();
-  for(int i=0; i < rows(); i++)
+  for(int i = first_column_; i <= last_column_; i++)
   {
-    int j=0;
-    while(j < columns())
-    {
+    for (int j = first_row_; j <= last_row_; j++) {
       buff += *(outputPixel(i, j));
       pixelCount += 1;
 
@@ -219,10 +218,7 @@ void Image::save(const std::string& filename)
         pixelCount = 0;
         buff = std::string();
       }
-
-      j+=1;
     }
-
   }
 
   if(pixelCount > 0)
@@ -232,17 +228,9 @@ void Image::save(const std::string& filename)
 
 }
 
-// unsigned char convert(double val)
-// {
-//   return (unsigned char) val;
-// }
-
 std::shared_ptr<std::string> Image::outputPixel(int row, int col) const
 {
   std::string buff = std::string();
-  // buff += std::to_string(convert(red->get(row, col))) + " ";
-  // buff += std::to_string(convert(green->get(row, col))) + " ";
-  // buff += std::to_string(convert(blue->get(row, col))) + " ";
   buff += std::to_string(red->get(row, col)) + " ";
   buff += std::to_string(green->get(row, col)) + " ";
   buff += std::to_string(blue->get(row, col)) + " ";

@@ -20,7 +20,7 @@ Stencil::~Stencil()
 
 void Stencil::parse()
 {
-  std::cout << "STENCIL PARSE\n";
+  // std::cout << "STENCIL PARSE\n";
   std::ifstream infile (source_filename());
   if (infile.is_open()) {
     parse_header(infile);
@@ -38,7 +38,7 @@ void Stencil::parse()
 
 void Stencil::parse_body(std::ifstream& infile)
 {
-  std::cout << "STENCIL BEGINNING TO PARSE BODY\n";
+  // std::cout << "STENCIL: BEGINNING TO PARSE BODY\n";
 
   std::string line;
   int row = 0;
@@ -53,12 +53,12 @@ void Stencil::parse_body(std::ifstream& infile)
     }
   }
 
-  std::cout << "FINISHED PARSING STENCIL BODY\n";
+  // std::cout << "STENCIL: FINISHED PARSING BODY\n";
 }
 
 void Stencil::parse_stencil_line(const std::string& line, const int row)
 {
-  std::cout << "Body line is " << line << std::endl;
+  // std::cout << "Body line is " << line << std::endl;
   const std::string whitespace ("\t\n\r ") ;
 
   int column = 0;
@@ -67,10 +67,10 @@ void Stencil::parse_stencil_line(const std::string& line, const int row)
   std::size_t index = line.find_first_of(whitespace);
   while (index != std::string::npos)
   {
-    std::cout << "Whitespace at " << index << "\n";
+    // std::cout << "Whitespace at " << index << "\n";
     if (!isspace(line.at(index + 1))) {
       value = std::stod(line.substr(last_index, index - last_index));
-      std::cout << "New value from line(" << last_index << "," <<  index - last_index << ") " << value << "\n";
+      // std::cout << "New value from line(" << last_index << "," <<  index - last_index << ") " << value << "\n";
       kernel->set(value, row, column++);
       last_index = index;
     }
@@ -79,22 +79,22 @@ void Stencil::parse_stencil_line(const std::string& line, const int row)
 
   // Parse the final value on the line
   value = std::stod(line.substr(last_index, line.size() - last_index));
-  std::cout << "New value from line(" << last_index << "," <<  line.size() << ") " << value << "\n";
+  // std::cout << "New value from line(" << last_index << "," <<  line.size() << ") " << value << "\n";
   kernel->set(value, row, column);
 }
 
 void Stencil::normalize()
 {
-  std::cout << "Kernel from PGM\n";
-  print_kernel();
+  // std::cout << "Kernel from PGM\n";
+  // print_kernel();
 
   double kernel_sum = shift_kernel_range();
-  std::cout << "Kernel after shift\n";
-  print_kernel();
+  // std::cout << "Kernel after shift\n";
+  // print_kernel();
 
   normalize_values(kernel_sum);
-  std::cout << "Final kernel\n";
-  print_kernel();
+  // std::cout << "Final kernel\n";
+  // print_kernel();
 }
 
 double Stencil::shift_kernel_range()
@@ -132,8 +132,8 @@ void Stencil::normalize_values(double kernel_sum)
   if ((int) kernel_sum == 0) {
 
     // zero-sum normalization
-    std::cout << "Zero-sum normalization\n";
 
+    // std::cout << "Zero-sum normalization\n";
     double sum_negative = 0.0;
     double sum_positive = 0.0;
     for (int i=0; i < rows(); i++) {
@@ -172,7 +172,7 @@ void Stencil::normalize_values(double kernel_sum)
   } else {
 
     // regular normalization
-    std::cout << "Regular normalization\n";
+    // std::cout << "Regular normalization\n";
     for (int i=0; i < rows(); i++) {
       for (int j=0; j < columns(); j++) {
         value = kernel->get(i, j);

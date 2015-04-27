@@ -16,12 +16,7 @@ public:
   ~Image();
 
   void parse() override;
-
-  void save(const std::string& filename);
-
-  // double get(int row, int col);
-  // void set(double val, int row, int col);
-  // void mult(double scalar);
+  void save(const std::string& filename) const;
 
   std::shared_ptr<Array2d> red_pixels() const { return red; }
   std::shared_ptr<Array2d> green_pixels() const { return green; }
@@ -31,7 +26,6 @@ protected:
   void parse_body(std::ifstream&) override;
 
 private:
-  // rows, cols, max_value, red, green, blue
   std::shared_ptr<Array2d> red;
   std::shared_ptr<Array2d> green;
   std::shared_ptr<Array2d> blue;
