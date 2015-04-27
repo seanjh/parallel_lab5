@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <memory>
+#include <array>
 #include <iostream>
 #include <string>
 #include <omp.h>
@@ -14,7 +15,6 @@ typedef struct _FilterArguments {
   int iterations;
   int threads;
 } FilterArguments;
-
 
 void show_usage(std::string name)
 {
@@ -59,7 +59,6 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
       break;
     }
   }
-
   // std::cout << "Image filename: " << args->image_filename << "\n";
   // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
   // std::cout << "Iterations: " << args->iterations << "\n";
@@ -84,8 +83,17 @@ int main(int argc, char* argv[])
   auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
   image->parse();
 
-  // Make a copy
-  auto image2 = std::make_shared<Image>(*image);
+  // Copy an image
+  // auto image2 = std::make_shared<Image>(*image);
+
+  // Preallocate work
+
+  // To iterate through the actual Image pixels (excluding padding)
+  // for (int row = image.first_row(); row <= image.last_row(); row++) {
+  //   for (int col = image.first_column(); col <= image.last_column(); col++) {
+  //     // pixel[row][col] is one pixel in the image
+  //   }
+  // }
 
   // for each iteration
   //  preallocate
