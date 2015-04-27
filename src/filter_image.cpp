@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
   stencil->parse();
   // Parse PPM image
   // EXTEND
-  auto image = std::make_shared<Image>(args->image_filename);
+  auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
   image->parse();
 
   auto image2 = std::make_shared<Image>(*image);

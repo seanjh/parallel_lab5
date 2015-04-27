@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-IMAGE="./img/doge~~jpg~~.ppm"
+IMAGE="./img/hummingbird~~jpg~~.ppm"
 STENCIL="./stencils/gaussian.pgm"
 ITER=2
 

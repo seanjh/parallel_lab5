@@ -9,7 +9,13 @@
 #define MAX_CHARACTERS_PER_LINE 70-1
 #define MAX_PIXELS_PER_LINE MAX_CHARACTERS_PER_LINE / CHARACTERS_PER_PIXEL
 
-Image::Image(const std::string& filename) : PNM(filename)
+Image::Image(const std::string& filename, int kernel_rows, int kernel_cols) : PNM(filename), kernel_rows_(kernel_rows), kernel_columns_(kernel_cols)
+{
+  // int row_padding = kernel_rows_ / 2;
+  // int col_padding = kernel_cols / 2;
+}
+
+Image::Image(const std::string& filename) : Image(filename, 0, 0)
 {
 }
 
@@ -43,16 +49,53 @@ Image::~Image()
 {
 }
 
+void Image::calcuate_offsets()
+{
+  // Requires that rows() and columns() are initialized
+  assert(rows());
+  assert(columns());
+
+  // Determines any required "padding" around the image to accomodate the kernel
+  if (kernel_rows_ != 0 && kernel_columns_ != 0) {
+    assert(kernel_columns_ % 2 != 0);
+    assert(kernel_rows_ % 2 != 0);
+
+    int row_padding = kernel_rows_ / 2;
+    int col_padding = kernel_columns_ / 2;
+
+    first_row_ = row_padding;
+    first_column_ = col_padding;
+    last_row_ = rows() - 1 + row_padding;
+    last_column_ = columns() - 1 + col_padding;
+    std::cout << "Row padding " << row_padding << " Col padding " << col_padding << "\n";
+    std::cout << "First Row " << first_row_ << " First Column " << first_column_ << "\n";
+    std::cout << "Last Row " << last_row_ << " Last Column " << last_column_ << "\n";
+
+  } else {
+    // No image padding needed
+    first_row_ = 0;
+    first_column_ = 0;
+    last_row_ = rows() - 1;
+    last_column_ = columns() - 1;
+  }
+}
+
 void Image::parse()
 {
   std::cout << "IMAGE PARSE\n";
+
   std::ifstream infile (source_filename());
   if (infile.is_open()) {
     parse_header(infile);
 
-    red = std::make_shared<Array2d>(rows(), columns());
-    green = std::make_shared<Array2d>(rows(), columns());
-    blue = std::make_shared<Array2d>(rows(), columns());
+    calcuate_offsets();
+
+    // Row and Column counts must include offsets (if any)
+    int row_count = rows() + ((kernel_rows_ / 2) * 2);
+    int col_count = columns() + ((kernel_columns_ / 2) * 2);
+    red = std::make_shared<Array2d>(row_count, col_count);
+    green = std::make_shared<Array2d>(row_count, col_count);
+    blue = std::make_shared<Array2d>(row_count, col_count);
 
     parse_body(infile);
 
@@ -67,8 +110,9 @@ void Image::parse_body(std::ifstream& infile)
   std::cout << "STENCIL BEGINNING TO PARSE BODY\n";
 
   std::string line;
-  int row = 0;
-  int column = 0;
+
+  int row = first_row_;
+  int column = first_column_;
   while ( getline (infile, line) ) {
     if (is_comment_line(line) || is_blank_line(line)) {
       // std::cout << "Skipping line - " << line << "\n";
@@ -110,9 +154,10 @@ void Image::parse_image_line(const std::string& line, int &row, int &column)
 
 void Image::set_sample_value(const double value, int &sample, int &row, int &column)
 {
+  std::cout << "Sample " << sample << " Row " << row << " Column " << column << "\n";
   assert(sample < 3);
-  assert(row < rows());
-  assert(column < columns());
+  assert(row <= last_row_);
+  assert(column <= last_column_);
 
   switch (sample) {
     case 0:
@@ -130,12 +175,12 @@ void Image::set_sample_value(const double value, int &sample, int &row, int &col
       std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
       blue->set(value, row, column);
 
-      if (column == columns() - 1) {
+      if (column == last_column_) {
         std::cout << "Starting a new ROW\n";
-        // Start a new row
+        // Start a new row here
         row++;
       }
-      column = (column + 1) % columns();
+      column = (column == last_column_) ?  first_column_ : (column + 1);
       break;
   }
 

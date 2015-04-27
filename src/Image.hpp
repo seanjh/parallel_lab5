@@ -10,6 +10,7 @@
 class Image : public PNM {
 public:
   Image(const std::string&);
+  Image(const std::string&, int, int);
   Image(const Image&);
   Image(int, int, int, int, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>, std::shared_ptr<Array2d>);
   ~Image();
@@ -35,9 +36,17 @@ private:
   std::shared_ptr<Array2d> green;
   std::shared_ptr<Array2d> blue;
 
+  int kernel_rows_;
+  int kernel_columns_;
+  int first_row_;
+  int first_column_;
+  int last_row_;
+  int last_column_;
+
   void parse_image_line(const std::string&, int&, int&);
   void set_sample_value(const double, int&, int&, int&);
   std::shared_ptr<std::string> outputPixel(int row, int col) const;
+  void calcuate_offsets();
 };
 
 #endif /* _IMAGE_H */
