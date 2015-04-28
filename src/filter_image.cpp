@@ -156,46 +156,51 @@ int main(int argc, char* argv[])
 
   int srcId;
   int dstId;
-  for(int i=0; i<args->iterations; i++)
+  // int threads = args->threads != 0 ? args->threads : 4;
+  // #pragma omp parallel num_threads(threads)
   {
-    //source and dest array flip back and forth based on iteration
-    srcId = (i%2);
-    dstId = (i+1)%2;
+    // #pragma omp for
+    for(int i=0; i<args->iterations; i++)
+    {
+      //source and dest array flip back and forth based on iteration
+      srcId = (i%2);
+      dstId = (i+1)%2;
 
-    // std::cout<<"Src="<<srcId<<", Dst="<<dstId<<std::endl;
+      // std::cout<<"Src="<<srcId<<", Dst="<<dstId<<std::endl;
 
-    convolveNoAlloc(
-      rgbBuffers[srcId].r,
-      rowOffset,
-      image->rows(),
-      colOffset,
-      image->columns(),
-      rgbBuffers[dstId].r,
-      rowOffset,
-      colOffset,
-      stencil->kernel);
+      convolveNoAlloc(
+        rgbBuffers[srcId].r,
+        rowOffset,
+        image->rows(),
+        colOffset,
+        image->columns(),
+        rgbBuffers[dstId].r,
+        rowOffset,
+        colOffset,
+        stencil->kernel);
 
-    convolveNoAlloc(
-      rgbBuffers[srcId].g,
-      rowOffset,
-      image->rows(),
-      colOffset,
-      image->columns(),
-      rgbBuffers[dstId].g,
-      rowOffset,
-      colOffset,
-      stencil->kernel);
+      convolveNoAlloc(
+        rgbBuffers[srcId].g,
+        rowOffset,
+        image->rows(),
+        colOffset,
+        image->columns(),
+        rgbBuffers[dstId].g,
+        rowOffset,
+        colOffset,
+        stencil->kernel);
 
-    convolveNoAlloc(
-      rgbBuffers[srcId].b,
-      rowOffset,
-      image->rows(),
-      colOffset,
-      image->columns(),
-      rgbBuffers[dstId].b,
-      rowOffset,
-      colOffset,
-      stencil->kernel);
+      convolveNoAlloc(
+        rgbBuffers[srcId].b,
+        rowOffset,
+        image->rows(),
+        colOffset,
+        image->columns(),
+        rgbBuffers[dstId].b,
+        rowOffset,
+        colOffset,
+        stencil->kernel);
+    }
   }
 
   // for(int i=0; i<image->rows(); i++)
