@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 NETPBM_COMMAND="jpegtopnm"
-IMAGE="./img/Madonna_with_child_and_angels.jpg"
-PPM_IMAGE="./img/madonna.ppm"
-PGM_STENCIL="./stencils/gaussian.pgm"
+IMAGE="./img/skater.jpg"
+PPM_IMAGE="./img/skater.ppm"
+PGM_STENCIL="./stencils/identity.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
-ITERATIONS=3
+ITERATIONS=1
 
 echo
 echo Running NetPBM Original to PPM conversion: $NETPBM_COMMAND $IMAGE

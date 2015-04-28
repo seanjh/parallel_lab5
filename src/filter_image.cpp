@@ -223,12 +223,12 @@ int main(int argc, char* argv[])
   {
     for(int j=0; j<image->columns(); j++)
     {
-      int yIndex = i + colOffset;
-      int xIndex = j + rowOffset;
+      int rowIndex = i + rowOffset;
+      int colIndex = j + colOffset;
 
-      output.r->set(rgbBuffers[dstId].r->get(yIndex, xIndex), i, j);
-      output.g->set(rgbBuffers[dstId].g->get(yIndex, xIndex), i, j);
-      output.b->set(rgbBuffers[dstId].b->get(yIndex, xIndex), i, j);
+      output.r->set(rgbBuffers[dstId].r->get(rowIndex, colIndex), i, j);
+      output.g->set(rgbBuffers[dstId].g->get(rowIndex, colIndex), i, j);
+      output.b->set(rgbBuffers[dstId].b->get(rowIndex, colIndex), i, j);
 
       // std::cout << "(row=" << i << ",col=" << j  << ") " <<
       // "R=" << output.r->get(i, j) <<
