@@ -37,7 +37,8 @@ Image::Image(
   std::shared_ptr<Array2d> blue_a,
   std::shared_ptr<Array2d> green_a
   ) :
-  PNM(magic_val, row_count, col_count, max_val)
+  PNM(magic_val, row_count, col_count, max_val),
+  kernel_rows_(0), kernel_columns_(0)
 {
   std::cout << "Making a new image from parameters\n";
   // Get a copy of each color array
