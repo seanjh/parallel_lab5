@@ -38,7 +38,7 @@ typedef struct _RGBArraySet {
 
 void show_usage(std::string name)
 {
-  std::cerr << "Usage: " << name << " [options] image_ppm stencil_pgm output_ppm iterations\n"
+  std::cerr << "Usage: " << name << " [options] image_ppm stencil_pgm output_ppm output_filename iterations\n"
             << "Options:\n"
             << "\t-t,--threads THREADS\tNumber of threads\n"
             << "\t-h,--help\t\tShow this help dialog\n"
@@ -83,6 +83,7 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
       break;
     }
   }
+
   // std::cout << "Image filename: " << args->image_filename << "\n";
   // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
   // std::cout << "Iterations: " << args->iterations << "\n";
@@ -104,8 +105,8 @@ int main(int argc, char* argv[])
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
   // Parse PPM image
-  // auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
-  auto image = std::make_shared<Image>(args->image_filename);
+  auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
+  // auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
 
   std::cout<<"Input image size = " <<image->rows()<< " x " << image->columns()<<std::endl;
@@ -124,7 +125,7 @@ int main(int argc, char* argv[])
   std::shared_ptr<Array2d> dest;
 
   const int rowOffset = (stencil->rows()/2);
-  const int colOffset = (stencil->rows()/2);
+  const int colOffset = (stencil->columns()/2);
 
   // source = image.r;
   // dest = rgbBuffers[0].r;
@@ -188,7 +189,7 @@ int main(int argc, char* argv[])
   std::cout<<"Convolution is complete. Writing output buffer."<<std::endl;
 
   RGBArraySet output;
-  
+
   output.r = std::make_shared<Array2d>(image->rows(), image->columns());
   output.g = std::make_shared<Array2d>(image->rows(), image->columns());
   output.b = std::make_shared<Array2d>(image->rows(), image->columns());
@@ -210,12 +211,12 @@ int main(int argc, char* argv[])
   std::cout<<"Processing is complete. Writing output image."<<std::endl;
 
   auto outputImage = std::make_shared<Image>(
-    image->magic_number(), 
-    image->rows(), 
-    image->columns(), 
-    image->max_value(), 
-    output.r, 
-    output.g, 
+    image->magic_number(),
+    image->rows(),
+    image->columns(),
+    image->max_value(),
+    output.r,
+    output.g,
     output.b);
 
   outputImage->save(args->output_filename);

@@ -243,9 +243,12 @@ void Image::save(const std::string& filename)
 std::shared_ptr<std::string> Image::outputPixel(int row, int col) const
 {
   std::string buff = std::string();
-  buff += std::to_string((int)(red->get(row, col) / max_value())) + " ";
-  buff += std::to_string((int)(green->get(row, col) / max_value())) + " ";
-  buff += std::to_string((int)(blue->get(row, col) / max_value())) + " ";
+  // buff += std::to_string((unsigned char)(red->get(row, col) / max_value())) + " ";
+  // buff += std::to_string((unsigned char)(green->get(row, col) / max_value())) + " ";
+  // buff += std::to_string((unsigned char)(blue->get(row, col) / max_value())) + " ";
+  buff += std::to_string((unsigned char)(red->get(row, col))) + " ";
+  buff += std::to_string((unsigned char)(green->get(row, col))) + " ";
+  buff += std::to_string((unsigned char)(blue->get(row, col))) + " ";
 
   return std::make_shared<std::string>(buff);
 }
