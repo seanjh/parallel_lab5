@@ -44,8 +44,8 @@ protected:
 private:
   const std::string source_filename_;
   int magic_number_;
-  int columns_;
   int rows_;
+  int columns_;
   int max_value_;
 
   static int parse_magic_number(const std::string&);

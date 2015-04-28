@@ -37,6 +37,8 @@ private:
 
   int kernel_rows_;
   int kernel_columns_;
+
+  // Covers sub-section of the arrays with the real image data (i.e., excluding the kernel "padding")
   int first_row_;
   int first_column_;
   int last_row_;

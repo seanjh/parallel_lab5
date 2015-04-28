@@ -5,11 +5,13 @@
 
 #include "Image.hpp"
 
-#define CHARACTERS_PER_PIXEL 3 + 1 + 3 + 1 + 3 + 1
-#define MAX_CHARACTERS_PER_LINE 70-1
+#define CHARACTERS_PER_PIXEL (3 + 1 + 3 + 1 + 3 + 1)
+#define MAX_CHARACTERS_PER_LINE (70-1)
 #define MAX_PIXELS_PER_LINE MAX_CHARACTERS_PER_LINE / CHARACTERS_PER_PIXEL
 
-Image::Image(const std::string& filename, int kernel_rows, int kernel_cols) : PNM(filename), kernel_rows_(kernel_rows), kernel_columns_(kernel_cols)
+Image::Image(const std::string& filename, int kernel_rows, int kernel_cols) :
+  PNM(filename),
+  kernel_rows_(kernel_rows), kernel_columns_(kernel_cols)
 {
   // int row_padding = kernel_rows_ / 2;
   // int col_padding = kernel_cols / 2;
@@ -34,17 +36,17 @@ Image::Image(const Image &img) :
 Image::Image(
   int magic_val, int row_count, int col_count, int max_val,
   std::shared_ptr<Array2d> red_a,
-  std::shared_ptr<Array2d> blue_a,
-  std::shared_ptr<Array2d> green_a
+  std::shared_ptr<Array2d> green_a,
+  std::shared_ptr<Array2d> blue_a
   ) :
   PNM(magic_val, row_count, col_count, max_val),
   kernel_rows_(0), kernel_columns_(0)
 {
   std::cout << "Making a new image from parameters\n";
   // Get a copy of each color array
-  this->red = std::make_shared<Array2d>(*red_a);
-  this->green = std::make_shared<Array2d>(*blue_a);
-  this->blue = std::make_shared<Array2d>(*green_a);
+  this->red = red_a;
+  this->green = green_a;
+  this->blue = blue_a;
 
   // calculate_offsets();
 }
@@ -221,6 +223,8 @@ void Image::save(const std::string& filename)
       buff += *(outputPixel(i, j));
       pixelCount += 1;
 
+      // std::cout << "pixelCount=" << pixelCount << "\n";
+
       if(pixelCount >= MAX_PIXELS_PER_LINE)
       {
         //dump to file
@@ -246,9 +250,14 @@ std::shared_ptr<std::string> Image::outputPixel(int row, int col) const
   // buff += std::to_string((unsigned char)(red->get(row, col) / max_value())) + " ";
   // buff += std::to_string((unsigned char)(green->get(row, col) / max_value())) + " ";
   // buff += std::to_string((unsigned char)(blue->get(row, col) / max_value())) + " ";
-  buff += std::to_string((unsigned char)(red->get(row, col))) + " ";
-  buff += std::to_string((unsigned char)(green->get(row, col))) + " ";
-  buff += std::to_string((unsigned char)(blue->get(row, col))) + " ";
+  buff += std::to_string((unsigned char) round(red->get(row, col))) + " ";
+  buff += std::to_string((unsigned char) round(green->get(row, col))) + " ";
+  buff += std::to_string((unsigned char) round(blue->get(row, col))) + " ";
+
+  // std::cout << "(row=" << row << ",col=" << col  << ") " <<
+  //   "R=" << red->get(row, col) <<
+  //   " G=" << green->get(row, col) <<
+  //   " B=" << blue->get(row, col) << "\n";
 
   return std::make_shared<std::string>(buff);
 }

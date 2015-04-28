@@ -83,7 +83,6 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
       break;
     }
   }
-
   // std::cout << "Image filename: " << args->image_filename << "\n";
   // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
   // std::cout << "Iterations: " << args->iterations << "\n";
@@ -105,9 +104,12 @@ int main(int argc, char* argv[])
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
   // Parse PPM image
-  auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
-  // auto image = std::make_shared<Image>(args->image_filename);
+  // auto image = std::make_shared<Image>(args->image_filename, stencil->rows(), stencil->columns());
+  auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
+
+  // std::cout << "Saving image\n";
+  // image->save("test.ppm");
 
   std::cout<<"Input image size = " <<image->rows()<< " x " << image->columns()<<std::endl;
 
@@ -127,6 +129,8 @@ int main(int argc, char* argv[])
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
 
+  std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
+
   // source = image.r;
   // dest = rgbBuffers[0].r;
 
@@ -137,6 +141,16 @@ int main(int argc, char* argv[])
       rgbBuffers[0].r->set(image->red_pixels()->get(i, j), i+rowOffset, j+colOffset);
       rgbBuffers[0].g->set(image->green_pixels()->get(i, j), i+rowOffset, j+colOffset);
       rgbBuffers[0].b->set(image->blue_pixels()->get(i, j), i+rowOffset, j+colOffset);
+    }
+  }
+
+  for(int i=0; i<image->rows(); i++)
+  {
+    for(int j=0; j<image->columns(); j++)
+    {
+      rgbBuffers[1].r->set(0, i+rowOffset, j+colOffset);
+      rgbBuffers[1].g->set(0, i+rowOffset, j+colOffset);
+      rgbBuffers[1].b->set(0, i+rowOffset, j+colOffset);
     }
   }
 
@@ -184,6 +198,16 @@ int main(int argc, char* argv[])
       stencil->kernel);
   }
 
+  // for(int i=0; i<image->rows(); i++)
+  // {
+  //   for(int j=0; j<image->columns(); j++)
+  //   {
+  //     std::cout << "R=" << rgbBuffers[dstId].r->get(i+rowOffset, j+colOffset) <<
+  //     " G=" << rgbBuffers[dstId].g->get(i+rowOffset, j+colOffset) <<
+  //     " B=" << rgbBuffers[dstId].b->get(i+rowOffset, j+colOffset) << "\n";
+  //   }
+  // }
+
 
 
   std::cout<<"Convolution is complete. Writing output buffer."<<std::endl;
@@ -205,6 +229,11 @@ int main(int argc, char* argv[])
       output.r->set(rgbBuffers[dstId].r->get(yIndex, xIndex), i, j);
       output.g->set(rgbBuffers[dstId].g->get(yIndex, xIndex), i, j);
       output.b->set(rgbBuffers[dstId].b->get(yIndex, xIndex), i, j);
+
+      // std::cout << "(row=" << i << ",col=" << j  << ") " <<
+      // "R=" << output.r->get(i, j) <<
+      // " G=" << output.g->get(i, j) <<
+      // " B=" << output.b->get(i, j) << "\n";
     }
   }
 
@@ -220,6 +249,17 @@ int main(int argc, char* argv[])
     output.b);
 
   outputImage->save(args->output_filename);
+
+  // for(int i=0; i<image->rows(); i++)
+  // {
+  //   for(int j=0; j<image->columns(); j++)
+  //   {
+  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
+  //     "R=" << output.r->get(i, j) <<
+  //     " G=" << output.g->get(i, j) <<
+  //     " B=" << output.b->get(i, j) << "\n";
+  //   }
+  // }
 
 
   // Copy an image

@@ -7,8 +7,8 @@ PNM::PNM(const std::string& filename) : source_filename_(filename)
   // source_filename = std::make_shared<std::string>(filename);
 }
 
-PNM::PNM(int magic_val, int col_count, int row_count, int max_val) :
-  magic_number_(magic_val), columns_(col_count), rows_(row_count), max_value_(max_val)
+PNM::PNM(int magic_val, int row_count, int col_count, int max_val) :
+  magic_number_(magic_val), rows_(row_count), columns_(col_count), max_value_(max_val)
 {
   //
 }
