@@ -21,11 +21,13 @@ public:
   void parse() override;
   void print_kernel() const;
 
+  std::shared_ptr<Array2d> kernel;
+
 protected:
   void parse_body(std::ifstream&) override;
 
 private:
-  std::shared_ptr<Array2d> kernel;
+  
 
   void parse_stencil_line(const std::string&, const int);
   void normalize();

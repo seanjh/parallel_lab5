@@ -16,7 +16,7 @@ public:
   ~Image();
 
   void parse() override;
-  void save(const std::string& filename) const;
+  void save(const std::string& filename);
 
   int first_row() const { return first_row_; }
   int first_column() const { return first_column_; }
@@ -45,7 +45,7 @@ private:
   void parse_image_line(const std::string&, int&, int&);
   void set_sample_value(const double, int&, int&, int&);
   std::shared_ptr<std::string> outputPixel(int row, int col) const;
-  void calcuate_offsets();
+  void calculate_offsets();
 };
 
 #endif /* _IMAGE_H */

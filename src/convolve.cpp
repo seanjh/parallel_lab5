@@ -34,14 +34,14 @@ void convolveNoAlloc(
 					int sourceColindex = j + sourceStartingCol - (kernelKVal-1) + m;
 
 
-					std::cout<<i<<" "<<j<<" "<<l<<" "<<m<<std::endl;
-					std::cout<<sourceRowindex<<" "<<sourceColindex<<std::endl;
+					// std::cout<<i<<" "<<j<<" "<<l<<" "<<m<<std::endl;
+					// std::cout<<sourceRowindex<<" "<<sourceColindex<<std::endl;
 					assert(sourceRowindex >= 0 && sourceRowindex < source->rows);
 					assert(sourceColindex >= 0 && sourceColindex < source->cols);
 					double sourceVal = source->get(sourceRowindex, sourceColindex);
 					double kernelVal = kernel->get(l, m);
 					sum += sourceVal * kernelVal;
-					std::cout<<sourceVal<<" "<<kernelVal<<" "<<sum<<std::endl;
+					// std::cout<<sourceVal<<" "<<kernelVal<<" "<<sum<<std::endl;
 				}
 			}
 			dest->set(sum, i+destStartingRow, j+destStartingCol);

@@ -103,7 +103,7 @@ double Stencil::shift_kernel_range()
   // kernel[i][j] = stencil_range_min + (2 * stencil_range_max * PGM value) / (PGM max_value)
 
   assert(max_value() != 0);
-  double kernel_sum;
+  double kernel_sum = 0.0;
 
   double old_value;
   double new_value;

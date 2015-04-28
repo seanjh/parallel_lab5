@@ -13,6 +13,8 @@ Image::Image(const std::string& filename, int kernel_rows, int kernel_cols) : PN
 {
   // int row_padding = kernel_rows_ / 2;
   // int col_padding = kernel_cols / 2;
+
+  // calculate_offsets();
 }
 
 Image::Image(const std::string& filename) : Image(filename, 0, 0)
@@ -42,6 +44,8 @@ Image::Image(
   this->red = std::make_shared<Array2d>(*red_a);
   this->green = std::make_shared<Array2d>(*blue_a);
   this->blue = std::make_shared<Array2d>(*green_a);
+
+  // calculate_offsets();
 }
 
 
@@ -49,7 +53,7 @@ Image::~Image()
 {
 }
 
-void Image::calcuate_offsets()
+void Image::calculate_offsets()
 {
   // Requires that rows() and columns() are initialized
   assert(rows());
@@ -88,7 +92,7 @@ void Image::parse()
   if (infile.is_open()) {
     parse_header(infile);
 
-    calcuate_offsets();
+    calculate_offsets();
 
     // Row and Column counts must include offsets (if any)
     int row_count = rows() + ((kernel_rows_ / 2) * 2);
@@ -189,10 +193,12 @@ void Image::set_sample_value(const double value, int &sample, int &row, int &col
   sample = (sample + 1) % 3;
 }
 
-void Image::save(const std::string& filename) const
+void Image::save(const std::string& filename)
 {
   std::ofstream file;
   file.open(filename);
+
+  calculate_offsets();
 
   file << "P" << magic_number() << std::endl;
 
@@ -200,9 +206,14 @@ void Image::save(const std::string& filename) const
 
   file << max_value() << std::endl;
 
-
   int pixelCount = 0;
   std::string buff = std::string();
+
+  std::cout<<"Outputting image."<<std::endl;
+
+  std::cout<<"Columns = ("<<first_column_<<", "<<last_column_<<")"<<std::endl;
+  std::cout<<"Rows = ("<<first_row_<<", "<<last_row_<<")"<<std::endl;
+
   for(int i = first_column_; i <= last_column_; i++)
   {
     for (int j = first_row_; j <= last_row_; j++) {
@@ -231,9 +242,9 @@ void Image::save(const std::string& filename) const
 std::shared_ptr<std::string> Image::outputPixel(int row, int col) const
 {
   std::string buff = std::string();
-  buff += std::to_string(red->get(row, col)) + " ";
-  buff += std::to_string(green->get(row, col)) + " ";
-  buff += std::to_string(blue->get(row, col)) + " ";
+  buff += std::to_string((int)(red->get(row, col) / max_value())) + " ";
+  buff += std::to_string((int)(green->get(row, col) / max_value())) + " ";
+  buff += std::to_string((int)(blue->get(row, col) / max_value())) + " ";
 
   return std::make_shared<std::string>(buff);
 }
