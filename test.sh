@@ -2,11 +2,11 @@
 NETPBM_COMMAND="jpegtopnm"
 IMAGE="./img/skater.jpg"
 PPM_IMAGE="./img/skater.ppm"
-PGM_STENCIL="./stencils/emboss.pgm"
+PGM_STENCIL="./stencils/gaussian.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
-ITERATIONS=1
-THREADS=2
+ITERATIONS=10
+THREADS=4
 
 echo
 echo Running NetPBM Original to PPM conversion: $NETPBM_COMMAND $IMAGE
@@ -22,7 +22,7 @@ echo Output:  $OUTPUT
 echo Threads: $THREADS
 
 echo
-./filter_image $PPM_IMAGE $PGM_STENCIL $OUTPUT $ITERATIONS -t $THREADS
+./filter_image -t $THREADS $PPM_IMAGE $PGM_STENCIL $OUTPUT $ITERATIONS
 echo Filtered PPM written to $OUTPUT
 
 echo
