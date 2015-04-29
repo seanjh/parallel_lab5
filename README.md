@@ -3,7 +3,7 @@
 ## Instructions
 
     make filter_image
-    ./filter_image IMAGE_PPM STENCIL_PGM OUTPUT_PPM ITERATIONS [-t THREADS]
+    ./filter_image [-t THREADS] IMAGE_PPM STENCIL_PGM OUTPUT_PPM ITERATIONS
 
 ## Stencils
 Image stencils should be represented in [Netbpm format](https://en.wikipedia.org/wiki/Netpbm_format), specifically as Portable GrayMap ASCII (P2). In these PGMs, the stencil values range from 0-255. These values are translated to a range between -8 and 8 before the stencil is applied to the image (see below).
