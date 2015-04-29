@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 NETPBM_COMMAND="jpegtopnm"
-IMAGE="./img/Madonna_with_child_and_angels.jpg"
-PPM_IMAGE="./img/madonna.ppm"
+IMAGE="./img/hummingbird.jpg"
+PPM_IMAGE="./img/hummingbird.ppm"
 PGM_STENCIL="./stencils/gaussian.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
-ITERATIONS=1
+ITERATIONS=10
 THREADS=8
 
 echo

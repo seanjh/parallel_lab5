@@ -16,7 +16,7 @@ void convolveNoAlloc(
 	std::shared_ptr<Array2d> kernel
 	)
 {
-	assert(kernel->rows == kernel->cols);
+	// assert(kernel->rows == kernel->cols);
 
 	int kernelKVal = (kernel->cols/2) + 1;
 
@@ -49,9 +49,11 @@ void convolveNoAlloc(
 	}
 
 }
+
+
 std::shared_ptr<Array2d> convolve(std::shared_ptr<Array2d> source, std::shared_ptr<Array2d> kernel, bool pad = true)
 {
-	assert(kernel->rows == kernel->cols);
+	// assert(kernel->rows == kernel->cols);
 
 	// int kernelKVal = (kernel->cols/2) + 1;
 	std::shared_ptr<Array2d> inputArray = source;

@@ -154,60 +154,87 @@ int main(int argc, char* argv[])
   }
 
   std::cout << "Applying image filter across " << args->threads << " total threads\n";
-  int srcId;
-  int dstId;
+  int rows_per_thread = image->rows() / args->threads;
+  std::cout << "Each thread will process " << rows_per_thread << " rows each iteration\n";
+
+  int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
+  #pragma omp parallel num_threads(args->threads) private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id)
   {
-    // std::cout << "Hello from thread " << omp_get_thread_num() << std::endl;
-    for(int i=0; i<args->iterations; i++)
+    thread_id = omp_get_thread_num();
+
+    source_buff_id = (this_iter % 2);
+    dest_buff_id = (this_iter + 1) % 2;
+    first_row = (thread_id * rows_per_thread) + rowOffset;
+    std::cout << "t" << thread_id << std::endl <<
+      "iter" << this_iter << std::endl;
+
+    // for(int i=0; i<args->iterations; i++)
+    this_iter = 0;
+    while (this_iter < args->iterations)
     {
       //source and dest array flip back and forth based on iteration
-      srcId = (i%2);
-      dstId = (i+1)%2;
-
-      // std::cout<<"Src="<<srcId<<", Dst="<<dstId<<std::endl;
-
+      std::cout << "Thread:" << thread_id << " first row: " << first_row << std::endl;
       convolveNoAlloc(
-        rgbBuffers[srcId].r,
-        rowOffset,
-        image->rows(),
+        rgbBuffers[source_buff_id].r,
+        first_row,
+        rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dstId].r,
+        rgbBuffers[dest_buff_id].r,
         rowOffset,
         colOffset,
-        stencil->kernel);
+        stencil->kernel
+      );
 
       convolveNoAlloc(
-        rgbBuffers[srcId].g,
-        rowOffset,
-        image->rows(),
+        rgbBuffers[source_buff_id].g,
+        first_row,
+        rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dstId].g,
+        rgbBuffers[dest_buff_id].g,
         rowOffset,
         colOffset,
-        stencil->kernel);
+        stencil->kernel
+      );
 
       convolveNoAlloc(
-        rgbBuffers[srcId].b,
-        rowOffset,
-        image->rows(),
+        rgbBuffers[source_buff_id].b,
+        first_row,
+        rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dstId].b,
+        rgbBuffers[dest_buff_id].b,
         rowOffset,
         colOffset,
-        stencil->kernel);
+        stencil->kernel
+      );
+      std::cout << "Thread " << thread_id << " done iteration " << this_iter << std::endl;
+
+      // #pragma omp single
+      // {
+      //   source_buff_id = (iterations % 2);
+      //   dest_buff_id = (iterations + 1) % 2;
+      //   iterations++;
+      // }
+
+      this_iter++;
+      source_buff_id = (this_iter % 2);
+      dest_buff_id = (this_iter + 1) % 2;
+
+      #pragma omp barrier
+
     }
+
   }
 
   // for(int i=0; i<image->rows(); i++)
   // {
   //   for(int j=0; j<image->columns(); j++)
   //   {
-  //     std::cout << "R=" << rgbBuffers[dstId].r->get(i+rowOffset, j+colOffset) <<
-  //     " G=" << rgbBuffers[dstId].g->get(i+rowOffset, j+colOffset) <<
-  //     " B=" << rgbBuffers[dstId].b->get(i+rowOffset, j+colOffset) << "\n";
+  //     std::cout << "R=" << rgbBuffers[dest_buff_id].r->get(i+rowOffset, j+colOffset) <<
+  //     " G=" << rgbBuffers[dest_buff_id].g->get(i+rowOffset, j+colOffset) <<
+  //     " B=" << rgbBuffers[dest_buff_id].b->get(i+rowOffset, j+colOffset) << "\n";
   //   }
   // }
 
@@ -227,9 +254,9 @@ int main(int argc, char* argv[])
       int rowIndex = i + rowOffset;
       int colIndex = j + colOffset;
 
-      output.r->set(rgbBuffers[dstId].r->get(rowIndex, colIndex), i, j);
-      output.g->set(rgbBuffers[dstId].g->get(rowIndex, colIndex), i, j);
-      output.b->set(rgbBuffers[dstId].b->get(rowIndex, colIndex), i, j);
+      output.r->set(rgbBuffers[dest_buff_id].r->get(rowIndex, colIndex), i, j);
+      output.g->set(rgbBuffers[dest_buff_id].g->get(rowIndex, colIndex), i, j);
+      output.b->set(rgbBuffers[dest_buff_id].b->get(rowIndex, colIndex), i, j);
 
       // std::cout << "(row=" << i << ",col=" << j  << ") " <<
       // "R=" << output.r->get(i, j) <<
