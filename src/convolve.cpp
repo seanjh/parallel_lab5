@@ -53,7 +53,7 @@ std::shared_ptr<Array2d> convolve(std::shared_ptr<Array2d> source, std::shared_p
 {
 	assert(kernel->rows == kernel->cols);
 
-	int kernelKVal = (kernel->cols/2) + 1;
+	// int kernelKVal = (kernel->cols/2) + 1;
 	std::shared_ptr<Array2d> inputArray = source;
 	std::shared_ptr<Array2d> outputArray = std::make_shared<Array2d>(source->rows, source->cols);
 

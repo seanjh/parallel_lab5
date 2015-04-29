@@ -61,12 +61,11 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
   std::string argument;
   for (int i = 1; i < argc; i++) {
     argument = argv[i];
-    std::cout << "Arg[" << i << "] " << argument << "\n";
+    // std::cout << "Arg[" << i << "] " << argument << "\n";
     if (argument == "-h" || argument == "--help") {
       show_usage(argv[0]);
       exit(EXIT_SUCCESS);
     } else if (argument == "-t" || argument == "--threads") {
-      std::cout << "Setting threads num\n";
       // Make certain there are more args to ingest
       if (++i < argc) {
         // std::cout << "Arg[" << i << "] " << argument << "\n";
@@ -89,11 +88,11 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
       break;
     }
   }
-  std::cout << "Image filename: " << args->image_filename << "\n";
-  std::cout << "Stencil filename: " << args->stencil_filename << "\n";
-  std::cout << "Output filename: " << args->output_filename << "\n";
-  std::cout << "Iterations: " << args->iterations << "\n";
-  std::cout << "Threads: " << args->threads << "\n";
+  // std::cout << "Image filename: " << args->image_filename << "\n";
+  // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
+  // std::cout << "Output filename: " << args->output_filename << "\n";
+  // std::cout << "Iterations: " << args->iterations << "\n";
+  // std::cout << "Threads: " << args->threads << "\n";
   return args;
 }
 
@@ -107,12 +106,6 @@ int main(int argc, char* argv[])
   }
   auto args = parse_arguments(argc, argv);
 
-  std::cout << "Image filename: " << args->image_filename << "\n";
-  std::cout << "Stencil filename: " << args->stencil_filename << "\n";
-  std::cout << "Output filename: " << args->output_filename << "\n";
-  std::cout << "Iterations: " << args->iterations << "\n";
-  std::cout << "Threads: " << args->threads << "\n";
-
   // Parse PGM stencil
   auto stencil = std::make_shared<Stencil>(args->stencil_filename);
   stencil->parse();
@@ -120,16 +113,6 @@ int main(int argc, char* argv[])
   // Parse PPM image
   auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
-
-  // std::cout << "Saving image\n";
-  // image->save("test.ppm");
-
-  std::cout<<"Input image: " << args->image_filename << std::endl <<
-    "\tMagic Num:\t" << image->magic_number() << std::endl <<
-    "\tRows:\t\t" << image->rows() << std::endl <<
-    "\tColumns:\t" << image->columns() << std::endl <<
-    "\tMax Val:\t" << image->max_value() << std::endl <<
-    std::endl;
 
   RGBArraySet rgbBuffers[2];
   for(int i=0; i<2; i++)
@@ -170,12 +153,12 @@ int main(int argc, char* argv[])
     }
   }
 
+  std::cout << "Applying image filter across " << args->threads << " total threads\n";
   int srcId;
   int dstId;
-  std::cout << "Using " << args->threads << " total threads\n";
   #pragma omp parallel num_threads(args->threads)
   {
-    std::cout << "Hello from thread " << omp_get_thread_num() << std::endl;
+    // std::cout << "Hello from thread " << omp_get_thread_num() << std::endl;
     #pragma omp for
     for(int i=0; i<args->iterations; i++)
     {
@@ -218,6 +201,7 @@ int main(int argc, char* argv[])
         colOffset,
         stencil->kernel);
     }
+    // std::cout << "Thread " << omp_get_thread_num() << " finished\n";
   }
 
   // for(int i=0; i<image->rows(); i++)
@@ -230,9 +214,7 @@ int main(int argc, char* argv[])
   //   }
   // }
 
-
-
-  std::cout<<"Convolution is complete. Writing output buffer."<<std::endl;
+  std::cout<<"Convolutions are complete. Writing output buffer."<<std::endl;
 
   RGBArraySet output;
 
@@ -259,7 +241,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  std::cout<<"Processing is complete. Creating output image."<<std::endl;
+  std::cout<<"Processing is complete. Writing output image."<<std::endl;
 
   auto outputImage = std::make_shared<Image>(
     image->magic_number(),
@@ -269,13 +251,6 @@ int main(int argc, char* argv[])
     output.r,
     output.g,
     output.b);
-
-  std::cout<<"Output image: " << args->output_filename << std::endl <<
-    "\tMagic Num:\t" << outputImage->magic_number() << std::endl <<
-    "\tRows:\t\t" << outputImage->rows() << std::endl <<
-    "\tColumns:\t" << outputImage->columns() << std::endl <<
-    "\tMax Val:\t" << outputImage->max_value() << std::endl <<
-    std::endl;
 
   outputImage->save(args->output_filename);
 
