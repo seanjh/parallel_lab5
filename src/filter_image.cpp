@@ -133,12 +133,10 @@ int main(int argc, char* argv[])
 
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
-
-  std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
+  // std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
 
   // source = image.r;
   // dest = rgbBuffers[0].r;
-
   for(int i=0; i<image->rows(); i++)
   {
     for(int j=0; j<image->columns(); j++)

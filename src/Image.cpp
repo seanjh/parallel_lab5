@@ -159,35 +159,32 @@ void Image::save(const std::string& filename)
 
   for(int row=0; row < rows(); row++)
   {
-    for (int col=0; col < columns(); col++) {
-      buff += *(outputPixel(row, col));
-      pixelCount += 1;
+    for (int col=0; col < columns(); col++)
+    {
+      // buff += *(outputPixel(row, col));
+      output_pixel(buff, row, col);
+      pixelCount++;
 
-      if(pixelCount >= MAX_PIXELS_PER_LINE)
-      {
-        //dump to file
+      if(pixelCount >= MAX_PIXELS_PER_LINE) {
+        // Dump to file
         file << buff << std::endl;
-
-        //reset pixel count and buffer
         pixelCount = 0;
-        buff = std::string();
+        buff.clear();
       }
-    }
-  }
 
-  if(pixelCount > 0)
-  {
+    } // end for cols
+  } // end for rows
+
+  if(pixelCount > 0) {
+    // Push any remaining data in the buffer to file
     file << buff << std::endl;
   }
 
 }
 
-std::shared_ptr<std::string> Image::outputPixel(int row, int col) const
+void Image::output_pixel(std::string& buff, int row, int col) const
 {
-  std::string buff = std::string();
   buff += std::to_string((unsigned char) round(red->get(row, col))) + " ";
   buff += std::to_string((unsigned char) round(green->get(row, col))) + " ";
   buff += std::to_string((unsigned char) round(blue->get(row, col))) + " ";
-
-  return std::make_shared<std::string>(buff);
 }

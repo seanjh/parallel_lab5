@@ -2,10 +2,10 @@
 NETPBM_COMMAND="jpegtopnm"
 IMAGE="./img/skater.jpg"
 PPM_IMAGE="./img/skater.ppm"
-PGM_STENCIL="./stencils/gaussian.pgm"
+PGM_STENCIL="./stencils/emboss.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
-ITERATIONS=10
+ITERATIONS=1
 THREADS=2
 
 echo
@@ -22,7 +22,6 @@ echo Output:  $OUTPUT
 echo Threads: $THREADS
 
 echo
-# echo "Filtering " $IMAGE " with " $STENCIL " for " $ITER " iterations."
 ./filter_image $PPM_IMAGE $PGM_STENCIL $OUTPUT $ITERATIONS -t $THREADS
 echo Filtered PPM written to $OUTPUT
 

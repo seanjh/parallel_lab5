@@ -37,19 +37,9 @@ private:
   std::shared_ptr<Array2d> green;
   std::shared_ptr<Array2d> blue;
 
-  // int kernel_rows_;
-  // int kernel_columns_;
-
-  // Covers sub-section of the arrays with the real image data (i.e., excluding the kernel "padding")
-  // int first_row_;
-  // int first_column_;
-  // int last_row_;
-  // int last_column_;
-
   void parse_image_line(const std::string&, int&, int&);
   void set_sample_value(const double, int&, int&, int&);
-  std::shared_ptr<std::string> outputPixel(int row, int col) const;
-  // void calculate_offsets();
+  void output_pixel(std::string&, int row, int col) const;
 };
 
 #endif /* _IMAGE_H */
