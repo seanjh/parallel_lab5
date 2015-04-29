@@ -114,6 +114,10 @@ int main(int argc, char* argv[])
   auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
 
+  std::cout<<"Image red " << image->red_pixels() << std::endl;
+  std::cout<<"Image green " << image->green_pixels() << std::endl;
+  std::cout<<"Image blue " << image->blue_pixels() << std::endl;
+
   RGBArraySet rgbBuffers[2];
   for(int i=0; i<2; i++)
   {
@@ -167,13 +171,17 @@ int main(int argc, char* argv[])
     first_row = (thread_id * rows_per_thread) + rowOffset;
     std::cout << "t" << thread_id << std::endl <<
       "iter" << this_iter << std::endl;
+    std::cout << "Thread:" << thread_id << " first row: " << first_row << std::endl;
 
     // for(int i=0; i<args->iterations; i++)
     this_iter = 0;
     while (this_iter < args->iterations)
     {
+      source_buff_id = (this_iter % 2);
+      dest_buff_id = (this_iter + 1) % 2;
       //source and dest array flip back and forth based on iteration
-      std::cout << "Thread:" << thread_id << " first row: " << first_row << std::endl;
+      std::cout << "Thread " << thread_id << " writing " << source_buff_id << "-->" << dest_buff_id << std::endl;
+
       convolveNoAlloc(
         rgbBuffers[source_buff_id].r,
         first_row,
@@ -219,8 +227,6 @@ int main(int argc, char* argv[])
       // }
 
       this_iter++;
-      source_buff_id = (this_iter % 2);
-      dest_buff_id = (this_iter + 1) % 2;
 
       #pragma omp barrier
 
@@ -228,17 +234,31 @@ int main(int argc, char* argv[])
 
   }
 
-  // for(int i=0; i<image->rows(); i++)
-  // {
-  //   for(int j=0; j<image->columns(); j++)
-  //   {
-  //     std::cout << "R=" << rgbBuffers[dest_buff_id].r->get(i+rowOffset, j+colOffset) <<
-  //     " G=" << rgbBuffers[dest_buff_id].g->get(i+rowOffset, j+colOffset) <<
-  //     " B=" << rgbBuffers[dest_buff_id].b->get(i+rowOffset, j+colOffset) << "\n";
-  //   }
-  // }
+  int final_destination = args->iterations % 2 == 0 ? 0: 1;
 
   std::cout<<"Convolutions are complete. Writing output buffer."<<std::endl;
+  std::cout << "source_buff_id=" << source_buff_id << " dest_buff_id=" << dest_buff_id << std::endl;
+  std::cout << "final_destination=" << final_destination << std::endl;
+  // std::cout<<"Image is " << &image << std::endl;
+  // std::cout<<"Image red " << image->red_pixels() << std::endl;
+  // std::cout<<"Image green " << image->green_pixels() << std::endl;
+  // std::cout<<"Image blue " << image->blue_pixels() << std::endl;
+  // std::cout << "Image rows: " << image->rows() << std::endl;
+  // std::cout << "Image columns: " << image->columns() << std::endl;
+
+  // for(int i=rowOffset; i<image->rows(); i++)
+  // {
+  //   for(int j=colOffset; j<image->columns(); j++)
+  //   {
+  //     std::cout << "Image pixel row=" << i <<
+  //     ", col=" << j << ": " << std::endl;
+  //     std::cout <<
+  //       "\tR:" << image->red_pixels()->get(i,j) <<
+  //       "\tG:" << image->green_pixels()->get(i,j) <<
+  //       "\tB:" << image->blue_pixels()->get(i,j) <<
+  //       std::endl;
+  //   }
+  // }
 
   RGBArraySet output;
 
@@ -254,9 +274,16 @@ int main(int argc, char* argv[])
       int rowIndex = i + rowOffset;
       int colIndex = j + colOffset;
 
-      output.r->set(rgbBuffers[dest_buff_id].r->get(rowIndex, colIndex), i, j);
-      output.g->set(rgbBuffers[dest_buff_id].g->get(rowIndex, colIndex), i, j);
-      output.b->set(rgbBuffers[dest_buff_id].b->get(rowIndex, colIndex), i, j);
+      // std::cout << "copying rgbBuffers[" << dest_buff_id << "] (row=" << rowIndex <<  ", col=" << colIndex << ")\n";
+      // std::cout <<
+      //   "\tR:" << rgbBuffers[final_destination].r->get(rowIndex, colIndex) <<
+      //   "\tG:" << rgbBuffers[final_destination].g->get(rowIndex, colIndex) <<
+      //   "\tB:" << rgbBuffers[final_destination].b->get(rowIndex, colIndex) << std::endl;
+      // std::cout << "setting output (row=" << i <<  ", col=" << j << ")\n";
+
+      output.r->set(rgbBuffers[final_destination].r->get(rowIndex, colIndex), i, j);
+      output.g->set(rgbBuffers[final_destination].g->get(rowIndex, colIndex), i, j);
+      output.b->set(rgbBuffers[final_destination].b->get(rowIndex, colIndex), i, j);
 
       // std::cout << "(row=" << i << ",col=" << j  << ") " <<
       // "R=" << output.r->get(i, j) <<
