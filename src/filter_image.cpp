@@ -156,10 +156,8 @@ int main(int argc, char* argv[])
   std::cout << "Applying image filter across " << args->threads << " total threads\n";
   int srcId;
   int dstId;
-  #pragma omp parallel num_threads(args->threads)
   {
     // std::cout << "Hello from thread " << omp_get_thread_num() << std::endl;
-    #pragma omp for
     for(int i=0; i<args->iterations; i++)
     {
       //source and dest array flip back and forth based on iteration
@@ -201,7 +199,6 @@ int main(int argc, char* argv[])
         colOffset,
         stencil->kernel);
     }
-    // std::cout << "Thread " << omp_get_thread_num() << " finished\n";
   }
 
   // for(int i=0; i<image->rows(); i++)
