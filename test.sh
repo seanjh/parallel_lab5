@@ -5,7 +5,7 @@ PPM_IMAGE="./img/skater.ppm"
 PGM_STENCIL="./stencils/gaussian.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
-ITERATIONS=1
+ITERATIONS=10
 THREADS=2
 
 echo

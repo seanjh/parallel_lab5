@@ -22,8 +22,8 @@ public:
 
   const std::string& source_filename() { return source_filename_; }
   int magic_number() const { return magic_number_; }
-  int columns() const { return columns_; }
   int rows() const { return rows_; }
+  int columns() const { return columns_; }
   int max_value() const { return max_value_; }
 
   virtual ~PNM();
@@ -37,8 +37,8 @@ protected:
   static bool is_comment_line(const std::string&);
 
   void set_magic_number(int magic_number) { magic_number_ = magic_number; }
-  void set_columns(int columns) { columns_ = columns; }
   void set_rows(int rows) { rows_ = rows; }
+  void set_columns(int columns) { columns_ = columns; }
   void set_max_value(int max_value) { max_value_ = max_value; }
 
 private:

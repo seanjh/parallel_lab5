@@ -36,8 +36,17 @@ Array2d::~Array2d() {
 }
 
 double Array2d::get(int row, int col) {
-  std::cout << "get row" << row << "/" << rows <<
-    " col=" << col << "/" << cols << "\n";
+  // std::cout << "get row" << row << "/" << rows <<
+  //   " col=" << col << "/" << cols << "\n";
+  if (row < 0 || row >= rows) {
+    std::cout << "ERROR get row" << row << "/" << rows <<
+      " col=" << col << "/" << cols << "\n";
+  }
+
+  if (col < 0 || col >= cols) {
+    std::cout << "ERROR get col" << row << "/" << rows <<
+      " col=" << col << "/" << cols << "\n";
+  }
   assert(row >= 0 && row < rows);
   assert(col >= 0 && col < cols);
   return array[row][col];

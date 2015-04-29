@@ -111,7 +111,12 @@ int main(int argc, char* argv[])
   // std::cout << "Saving image\n";
   // image->save("test.ppm");
 
-  std::cout<<"Input image size = " <<image->rows()<< " x " << image->columns()<<std::endl;
+  std::cout<<"Input image: " << args->image_filename << std::endl <<
+    "\tMagic Num:\t" << image->magic_number() << std::endl <<
+    "\tRows:\t\t" << image->rows() << std::endl <<
+    "\tColumns:\t" << image->columns() << std::endl <<
+    "\tMax Val:\t" << image->max_value() << std::endl <<
+    std::endl;
 
   RGBArraySet rgbBuffers[2];
   for(int i=0; i<2; i++)
@@ -242,7 +247,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  std::cout<<"Processing is complete. Writing output image."<<std::endl;
+  std::cout<<"Processing is complete. Creating output image."<<std::endl;
 
   auto outputImage = std::make_shared<Image>(
     image->magic_number(),
@@ -252,6 +257,13 @@ int main(int argc, char* argv[])
     output.r,
     output.g,
     output.b);
+
+  std::cout<<"Output image: " << args->output_filename << std::endl <<
+    "\tMagic Num:\t" << outputImage->magic_number() << std::endl <<
+    "\tRows:\t\t" << outputImage->rows() << std::endl <<
+    "\tColumns:\t" << outputImage->columns() << std::endl <<
+    "\tMax Val:\t" << outputImage->max_value() << std::endl <<
+    std::endl;
 
   outputImage->save(args->output_filename);
 
