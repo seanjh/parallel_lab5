@@ -128,8 +128,8 @@ int main(int argc, char* argv[])
     rgbBuffers[i].b = std::make_shared<Array2d>(image->rows() + padding, image->columns() + padding);
   }
 
-  std::shared_ptr<Array2d> source;
-  std::shared_ptr<Array2d> dest;
+  // std::shared_ptr<Array2d> source;
+  // std::shared_ptr<Array2d> dest;
 
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
@@ -157,30 +157,30 @@ int main(int argc, char* argv[])
     }
   }
 
-  std::cout << "Applying image filter across " << args->threads << " total threads\n";
   int rows_per_thread = image->rows() / args->threads;
+  std::cout << "Applying image filter across " << args->threads << " total threads\n";
   std::cout << "Each thread will process " << rows_per_thread << " rows each iteration\n";
 
   int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
-  #pragma omp parallel num_threads(args->threads) private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id)
+  #pragma omp parallel num_threads(args->threads) shared(rgbBuffers) private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id)
   {
     thread_id = omp_get_thread_num();
 
     source_buff_id = (this_iter % 2);
     dest_buff_id = (this_iter + 1) % 2;
     first_row = (thread_id * rows_per_thread) + rowOffset;
-    std::cout << "t" << thread_id << std::endl <<
-      "iter" << this_iter << std::endl;
-    std::cout << "Thread:" << thread_id << " first row: " << first_row << std::endl;
+    // #pragma omp critical
+    // {
+    //   std::cout << "Thread: " << thread_id << " first row is " << first_row << std::endl;
+    // }
 
     // for(int i=0; i<args->iterations; i++)
     this_iter = 0;
     while (this_iter < args->iterations)
     {
+      //source and dest array flip back and forth based on iteration
       source_buff_id = (this_iter % 2);
       dest_buff_id = (this_iter + 1) % 2;
-      //source and dest array flip back and forth based on iteration
-      std::cout << "Thread " << thread_id << " writing " << source_buff_id << "-->" << dest_buff_id << std::endl;
 
       convolveNoAlloc(
         rgbBuffers[source_buff_id].r,
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
         colOffset,
         image->columns(),
         rgbBuffers[dest_buff_id].r,
-        rowOffset,
+        first_row,
         colOffset,
         stencil->kernel
       );
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
         colOffset,
         image->columns(),
         rgbBuffers[dest_buff_id].g,
-        rowOffset,
+        first_row,
         colOffset,
         stencil->kernel
       );
@@ -213,23 +213,15 @@ int main(int argc, char* argv[])
         colOffset,
         image->columns(),
         rgbBuffers[dest_buff_id].b,
-        rowOffset,
+        first_row,
         colOffset,
         stencil->kernel
       );
-      std::cout << "Thread " << thread_id << " done iteration " << this_iter << std::endl;
-
-      // #pragma omp single
-      // {
-      //   source_buff_id = (iterations % 2);
-      //   dest_buff_id = (iterations + 1) % 2;
-      //   iterations++;
-      // }
 
       this_iter++;
 
+      // Synchronize between each iteration
       #pragma omp barrier
-
     }
 
   }
@@ -237,28 +229,6 @@ int main(int argc, char* argv[])
   int final_destination = args->iterations % 2 == 0 ? 0: 1;
 
   std::cout<<"Convolutions are complete. Writing output buffer."<<std::endl;
-  std::cout << "source_buff_id=" << source_buff_id << " dest_buff_id=" << dest_buff_id << std::endl;
-  std::cout << "final_destination=" << final_destination << std::endl;
-  // std::cout<<"Image is " << &image << std::endl;
-  // std::cout<<"Image red " << image->red_pixels() << std::endl;
-  // std::cout<<"Image green " << image->green_pixels() << std::endl;
-  // std::cout<<"Image blue " << image->blue_pixels() << std::endl;
-  // std::cout << "Image rows: " << image->rows() << std::endl;
-  // std::cout << "Image columns: " << image->columns() << std::endl;
-
-  // for(int i=rowOffset; i<image->rows(); i++)
-  // {
-  //   for(int j=colOffset; j<image->columns(); j++)
-  //   {
-  //     std::cout << "Image pixel row=" << i <<
-  //     ", col=" << j << ": " << std::endl;
-  //     std::cout <<
-  //       "\tR:" << image->red_pixels()->get(i,j) <<
-  //       "\tG:" << image->green_pixels()->get(i,j) <<
-  //       "\tB:" << image->blue_pixels()->get(i,j) <<
-  //       std::endl;
-  //   }
-  // }
 
   RGBArraySet output;
 
@@ -274,21 +244,10 @@ int main(int argc, char* argv[])
       int rowIndex = i + rowOffset;
       int colIndex = j + colOffset;
 
-      // std::cout << "copying rgbBuffers[" << dest_buff_id << "] (row=" << rowIndex <<  ", col=" << colIndex << ")\n";
-      // std::cout <<
-      //   "\tR:" << rgbBuffers[final_destination].r->get(rowIndex, colIndex) <<
-      //   "\tG:" << rgbBuffers[final_destination].g->get(rowIndex, colIndex) <<
-      //   "\tB:" << rgbBuffers[final_destination].b->get(rowIndex, colIndex) << std::endl;
-      // std::cout << "setting output (row=" << i <<  ", col=" << j << ")\n";
-
       output.r->set(rgbBuffers[final_destination].r->get(rowIndex, colIndex), i, j);
       output.g->set(rgbBuffers[final_destination].g->get(rowIndex, colIndex), i, j);
       output.b->set(rgbBuffers[final_destination].b->get(rowIndex, colIndex), i, j);
 
-      // std::cout << "(row=" << i << ",col=" << j  << ") " <<
-      // "R=" << output.r->get(i, j) <<
-      // " G=" << output.g->get(i, j) <<
-      // " B=" << output.b->get(i, j) << "\n";
     }
   }
 
@@ -304,35 +263,6 @@ int main(int argc, char* argv[])
     output.b);
 
   outputImage->save(args->output_filename);
-
-  // for(int i=0; i<image->rows(); i++)
-  // {
-  //   for(int j=0; j<image->columns(); j++)
-  //   {
-  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
-  //     "R=" << output.r->get(i, j) <<
-  //     " G=" << output.g->get(i, j) <<
-  //     " B=" << output.b->get(i, j) << "\n";
-  //   }
-  // }
-
-
-  // Copy an image
-  // auto image2 = std::make_shared<Image>(*image);
-
-  // Preallocate work
-
-  // To iterate through the actual Image pixels (excluding padding)
-  // for (int row = image.first_row(); row <= image.last_row(); row++) {
-  //   for (int col = image.first_column(); col <= image.last_column(); col++) {
-  //     // pixel[row][col] is one pixel in the image
-  //   }
-  // }
-
-  // for each iteration
-  //  preallocate
-  //  apply stencil (convolve)
-  // write filtered PPM image
 
   return EXIT_SUCCESS;
 }

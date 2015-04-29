@@ -20,11 +20,6 @@ public:
   void parse() override;
   void save(const std::string& filename);
 
-  // int first_row() const { return first_row_; }
-  // int first_column() const { return first_column_; }
-  // int last_row() const { return last_row_; }
-  // int last_column() const { return last_column_; }
-
   std::shared_ptr<Array2d> red_pixels() const { return red; }
   std::shared_ptr<Array2d> green_pixels() const { return green; }
   std::shared_ptr<Array2d> blue_pixels() const { return blue; }
