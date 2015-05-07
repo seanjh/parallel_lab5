@@ -105,6 +105,13 @@ void Image::parse_image_line(const std::string& line, int &row, int &column)
     index = line.find_first_of(whitespace, index);
   }
 
+  std::cout << "Finished parsing body line. (sample_num=" << sample_num <<
+    ", index=" << index <<
+    ", last_index=" << last_index <<
+    ", length()=" << line.size() <<
+    ")" <<
+    std::endl;
+
 }
 
 void Image::set_sample_value(const double value, int &sample_num, int &row, int &column)
