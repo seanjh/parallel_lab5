@@ -5,22 +5,19 @@
 
 #include "Stencil.hpp"
 
-const int stencil_range_max = 8;
-const int stencil_range_min = -8;
+const int stencil_range_max = 127;
+const int stencil_range_min = -127;
 
 Stencil::Stencil(const std::string& filename) : PNM(filename)
 {
-  // std::cout << "Created Stencil\n";
 }
 
 Stencil::~Stencil()
 {
-  // std::cout << "Cya Stencil " << source_filename() << "\n";
 }
 
 void Stencil::parse()
 {
-  // std::cout << "STENCIL PARSE\n";
   std::ifstream infile (source_filename());
   if (infile.is_open()) {
     parse_header(infile);
@@ -58,7 +55,6 @@ void Stencil::parse_body(std::ifstream& infile)
 
 void Stencil::parse_stencil_line(const std::string& line, const int row)
 {
-  // std::cout << "Body line is " << line << std::endl;
   const std::string whitespace ("\t\n\r ") ;
 
   int column = 0;
@@ -67,10 +63,8 @@ void Stencil::parse_stencil_line(const std::string& line, const int row)
   std::size_t index = line.find_first_of(whitespace);
   while (index != std::string::npos)
   {
-    // std::cout << "Whitespace at " << index << "\n";
     if (!isspace(line.at(index + 1))) {
       value = std::stod(line.substr(last_index, index - last_index));
-      // std::cout << "New value from line(" << last_index << "," <<  index - last_index << ") " << value << "\n";
       kernel->set(value, row, column++);
       last_index = index;
     }

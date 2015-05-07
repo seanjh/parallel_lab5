@@ -4,8 +4,8 @@
 #include <array>
 #include <iostream>
 #include <string>
+
 #include <omp.h>
-#include <assert.h>
 
 #include "Stencil.hpp"
 #include "Image.hpp"
@@ -128,15 +128,10 @@ int main(int argc, char* argv[])
     rgbBuffers[i].b = std::make_shared<Array2d>(image->rows() + padding, image->columns() + padding);
   }
 
-  // std::shared_ptr<Array2d> source;
-  // std::shared_ptr<Array2d> dest;
-
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
-  // std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
+  std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
 
-  // source = image.r;
-  // dest = rgbBuffers[0].r;
   for(int i=0; i<image->rows(); i++)
   {
     for(int j=0; j<image->columns(); j++)
@@ -161,21 +156,38 @@ int main(int argc, char* argv[])
   std::cout << "Applying image filter across " << args->threads << " total threads\n";
   std::cout << "Each thread will process " << rows_per_thread << " rows each iteration\n";
 
-  int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
-  #pragma omp parallel num_threads(args->threads) shared(rgbBuffers) private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id)
+  for(int i=0; i<image->rows(); i++)
+  {
+    for(int j=0; j<image->columns(); j++)
+    {
+      std::cout << "(row=" << i << ",col=" << j  << ") " <<
+      "R=" << image->red_pixels()->get(i, j) <<
+      " G=" << image->green_pixels()->get(i, j) <<
+      " B=" << image->blue_pixels()->get(i, j) << "\n";
+    }
+  }
+
+  // int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
+  int thread_id = 0;
+  int first_row = 0;
+  int this_iter = 0;
+  int source_buff_id = 0;
+  int dest_buff_id = 0;
+  #pragma omp parallel private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id) shared(rgbBuffers) num_threads(args->threads)
   {
     thread_id = omp_get_thread_num();
 
+    this_iter = 0;
     source_buff_id = (this_iter % 2);
     dest_buff_id = (this_iter + 1) % 2;
     first_row = (thread_id * rows_per_thread) + rowOffset;
-    // #pragma omp critical
-    // {
-    //   std::cout << "Thread: " << thread_id << " first row is " << first_row << std::endl;
-    // }
+
+    #pragma omp critical
+    {
+      std::cout << "Thread: " << thread_id << " first row is " << first_row << std::endl;
+    }
 
     // for(int i=0; i<args->iterations; i++)
-    this_iter = 0;
     while (this_iter < args->iterations)
     {
       //source and dest array flip back and forth based on iteration
@@ -226,7 +238,8 @@ int main(int argc, char* argv[])
 
   }
 
-  int final_destination = args->iterations % 2 == 0 ? 0: 1;
+  // Output buffer depends on whether iterations is odd (0) or even (1)
+  int final_destination = args->iterations % 2 == 0 ? 0 : 1;
 
   std::cout<<"Convolutions are complete. Writing output buffer."<<std::endl;
 
@@ -250,6 +263,17 @@ int main(int argc, char* argv[])
 
     }
   }
+
+  // for(int i=0; i<image->rows(); i++)
+  // {
+  //   for(int j=0; j<image->columns(); j++)
+  //   {
+  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
+  //     "R=" << output.r->get(i, j) <<
+  //     " G=" << output.g->get(i, j) <<
+  //     " B=" << output.b->get(i, j) << "\n";
+  //   }
+  // }
 
   std::cout<<"Processing is complete. Writing output image."<<std::endl;
 

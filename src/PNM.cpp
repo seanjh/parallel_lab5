@@ -4,13 +4,13 @@
 
 PNM::PNM(const std::string& filename) : source_filename_(filename)
 {
-  // source_filename = std::make_shared<std::string>(filename);
+  // Intentionally empty
 }
 
 PNM::PNM(int magic_val, int row_count, int col_count, int max_val) :
   magic_number_(magic_val), rows_(row_count), columns_(col_count), max_value_(max_val)
 {
-  //
+  // Intentionally empty
 }
 
 void PNM::parse()
@@ -27,12 +27,11 @@ void PNM::parse()
 
 PNM::~PNM()
 {
-    // std::cout << "Cya PNM " << source_filename() << "\n";
+  // Intentionally empty
 }
 
 void PNM::parse_header(std::ifstream& infile)
 {
-  // std::cout << "BEGINNING TO PARSE HEADER\n";
   std::string line;
   int line_number = 0;
   int number;
@@ -40,11 +39,8 @@ void PNM::parse_header(std::ifstream& infile)
 
   while ( line_number < 3 && getline (infile, line) ) {
     if (is_comment_line(line) || is_blank_line(line)) {
-      // std::cout << "Skipping line - " << line << "\n";
       continue;
     } else {
-      // TODO
-      // std::cout << "Header line: " << line << "\n";
       switch (line_number) {
         case 0:
           // Magic number line (e.g., "P2\n")
@@ -68,13 +64,11 @@ void PNM::parse_header(std::ifstream& infile)
       }
     }
   }
-
-  // std::cout << "FINISHED PARSING HEADER\n";
 }
 
 void PNM::parse_body(std::ifstream& infile)
 {
-  // std::cout << "PNM (Base class) PARSE BODY\n";
+  // Intentionally empty
 }
 
 int PNM::parse_magic_number(const std::string& str)
@@ -100,7 +94,6 @@ dimensions PNM::parse_dimensions(const std::string& str)
 
   d.columns = std::stoi(col_str);
   d.rows = std::stoi(row_str);
-  // std::cout << "columns: " << d.columns  << ", rows: " << d.rows << "\n";
 
   return d;
 }

@@ -8,6 +8,9 @@
 #include "Array2d.hpp"
 
 extern const int samples_per_pixel;
+extern const int CHARACTERS_PER_PIXEL;
+extern const int MAX_CHARACTERS_PER_LINE;
+extern const int MAX_PIXELS_PER_LINE;
 
 class Image : public PNM {
 public:

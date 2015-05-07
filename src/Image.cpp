@@ -5,11 +5,14 @@
 
 #include "Image.hpp"
 
-#define CHARACTERS_PER_PIXEL (3 + 1 + 3 + 1 + 3 + 1)
-#define MAX_CHARACTERS_PER_LINE (70 - 1)
-#define MAX_PIXELS_PER_LINE MAX_CHARACTERS_PER_LINE / CHARACTERS_PER_PIXEL
+// #define CHARACTERS_PER_PIXEL (3 + 1 + 3 + 1 + 3 + 1)
+// #define MAX_CHARACTERS_PER_LINE (70 - 1)
+// #define MAX_PIXELS_PER_LINE MAX_CHARACTERS_PER_LINE / CHARACTERS_PER_PIXEL
 
 const int samples_per_pixel = 3;
+const int CHARACTERS_PER_PIXEL = (3 + 1 + 3 + 1 + 3 + 1);
+const int MAX_CHARACTERS_PER_LINE = (70 - 1); // Defined by Netpbm spec
+const int MAX_PIXELS_PER_LINE = MAX_CHARACTERS_PER_LINE / CHARACTERS_PER_PIXEL;
 
 Image::Image(const std::string& filename) : PNM(filename)
 {
@@ -82,7 +85,7 @@ void Image::parse_body(std::ifstream& infile)
 
 void Image::parse_image_line(const std::string& line, int &row, int &column)
 {
-  // std::cout << "Body line is " << line << std::endl;
+  std::cout << "Body line is " << line << std::endl;
   const std::string whitespace ("\t\n\r ") ;
 
   int sample_num = 0;
@@ -114,21 +117,21 @@ void Image::set_sample_value(const double value, int &sample_num, int &row, int 
   switch (sample_num) {
     case 0:
       // RED
-      // std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
+      std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
       red->set(value, row, column);
       break;
     case 1:
       // GREEN
-      // std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
+      std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
       green->set(value, row, column);
       break;
     case 2:
       // BLUE
-      // std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
+      std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
       blue->set(value, row, column);
 
       if (column == columns() - 1) {
-        // std::cout << "Starting a new ROW\n";
+        std::cout << "Starting a new ROW\n";
         // Start a new row here
         row++;
       }

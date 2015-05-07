@@ -1,7 +1,8 @@
 #include <memory>
-#include "Array2d.hpp"
-#include "assert.h"
+#include <cassert>
 #include <iostream>
+
+#include "Array2d.hpp"
 
 
 void convolveNoAlloc(
@@ -18,30 +19,36 @@ void convolveNoAlloc(
 {
   // assert(kernel->rows == kernel->cols);
 
-  int kernelKVal = (kernel->cols/2) + 1;
+  int kernelKVal = (kernel->cols / 2) + 1;
+  int sourceRowindex, sourceColindex;
+  double sourceVal, kernelVal;
 
-  for (int i=0; i<rowCount; i++)
+  for (int s_row=0; s_row<rowCount; s_row++)
   {
-    for (int j=0; j<colCount; j++)
+    for (int s_col=0; s_col<colCount; s_col++)
     {
       double sum = 0.0;
 
-      for(int l=0; l<kernel->rows; l++)
+      for(int k_row=0; k_row<kernel->rows; k_row++)
       {
-        for(int m=0; m<kernel->cols; m++)
+        for(int k_col=0; k_col<kernel->cols; k_col++)
         {
-          int sourceRowindex = i + sourceStartingRow - (kernelKVal-1) + l;
-          int sourceColindex = j + sourceStartingCol - (kernelKVal-1) + m;
+          sourceRowindex = s_row + sourceStartingRow - (kernelKVal-1) + k_row;
+          sourceColindex = s_col + sourceStartingCol - (kernelKVal-1) + k_col;
+
+          // std::cout<<s_row<<" "<<s_col<<" "<<l<<" "<<m<<std::endl;
+          // std::cout<<sourceRowindex<<" "<<sourceColindex<<std::endl;
 
           assert(sourceRowindex >= 0 && sourceRowindex < source->rows);
           assert(sourceColindex >= 0 && sourceColindex < source->cols);
 
-          double sourceVal = source->get(sourceRowindex, sourceColindex);
-          double kernelVal = kernel->get(l, m);
+          sourceVal = source->get(sourceRowindex, sourceColindex);
+          kernelVal = kernel->get(k_row, k_col);
           sum += sourceVal * kernelVal;
+          // std::cout<<sourceVal<<" "<<kernelVal<<" "<<sum<<std::endl;
         }
       }
-      dest->set(sum, i+destStartingRow, j+destStartingCol);
+      dest->set(sum, s_row + destStartingRow, s_col + destStartingCol);
     }
   }
 
