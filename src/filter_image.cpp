@@ -31,9 +31,9 @@ typedef struct _FilterArguments {
 } FilterArguments;
 
 typedef struct _RGBArraySet {
-  std::shared_ptr<Array2d> r;
-  std::shared_ptr<Array2d> g;
-  std::shared_ptr<Array2d> b;
+  std::shared_ptr<Array2d> red;
+  std::shared_ptr<Array2d> green;
+  std::shared_ptr<Array2d> blue;
 } RGBArraySet;
 
 void show_usage(std::string name)
@@ -61,14 +61,12 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
   std::string argument;
   for (int i = 1; i < argc; i++) {
     argument = argv[i];
-    // std::cout << "Arg[" << i << "] " << argument << "\n";
     if (argument == "-h" || argument == "--help") {
       show_usage(argv[0]);
       exit(EXIT_SUCCESS);
     } else if (argument == "-t" || argument == "--threads") {
       // Make certain there are more args to ingest
       if (++i < argc) {
-        // std::cout << "Arg[" << i << "] " << argument << "\n";
         args->threads = std::stoi(argv[i]);
       } else {
         std::cerr << "--threads option requires one argument." << std::endl;
@@ -88,11 +86,6 @@ std::shared_ptr<FilterArguments> parse_arguments(int argc, char* argv[])
       break;
     }
   }
-  // std::cout << "Image filename: " << args->image_filename << "\n";
-  // std::cout << "Stencil filename: " << args->stencil_filename << "\n";
-  // std::cout << "Output filename: " << args->output_filename << "\n";
-  // std::cout << "Iterations: " << args->iterations << "\n";
-  // std::cout << "Threads: " << args->threads << "\n";
   return args;
 }
 
@@ -114,32 +107,27 @@ int main(int argc, char* argv[])
   auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
 
-  // std::cout<<"Image red " << image->red_pixels() << std::endl;
-  // std::cout<<"Image green " << image->green_pixels() << std::endl;
-  // std::cout<<"Image blue " << image->blue_pixels() << std::endl;
-
   RGBArraySet rgbBuffers[2];
+  int row_padding = (stencil->rows() / 2) * 2;
+  int col_padding = (stencil->columns() / 2) * 2;
   for(int i=0; i<2; i++)
   {
-    assert(stencil->rows() == stencil->columns());
-    int padding = (stencil->rows()/2)*2;
-    rgbBuffers[i].r = std::make_shared<Array2d>(image->rows() + padding, image->columns() + padding);
-    rgbBuffers[i].g = std::make_shared<Array2d>(image->rows() + padding, image->columns() + padding);
-    rgbBuffers[i].b = std::make_shared<Array2d>(image->rows() + padding, image->columns() + padding);
+    rgbBuffers[i].red = std::make_shared<Array2d>(image->rows() + row_padding, image->columns() + col_padding);
+    rgbBuffers[i].green = std::make_shared<Array2d>(image->rows() + row_padding, image->columns() + col_padding);
+    rgbBuffers[i].blue = std::make_shared<Array2d>(image->rows() + row_padding, image->columns() + col_padding);
   }
 
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
-  // std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
 
   // Initialize update buffers with image pixels
   for(int i=0; i<image->rows(); i++)
   {
     for(int j=0; j<image->columns(); j++)
     {
-      rgbBuffers[0].r->set(image->red_pixels()->get(i, j), i+rowOffset, j+colOffset);
-      rgbBuffers[0].g->set(image->green_pixels()->get(i, j), i+rowOffset, j+colOffset);
-      rgbBuffers[0].b->set(image->blue_pixels()->get(i, j), i+rowOffset, j+colOffset);
+      rgbBuffers[0].red->set(image->red_pixels()->get(i, j), i+rowOffset, j+colOffset);
+      rgbBuffers[0].green->set(image->green_pixels()->get(i, j), i+rowOffset, j+colOffset);
+      rgbBuffers[0].blue->set(image->blue_pixels()->get(i, j), i+rowOffset, j+colOffset);
     }
   }
 
@@ -147,43 +135,48 @@ int main(int argc, char* argv[])
   {
     for(int j=0; j<image->columns(); j++)
     {
-      rgbBuffers[1].r->set(0, i+rowOffset, j+colOffset);
-      rgbBuffers[1].g->set(0, i+rowOffset, j+colOffset);
-      rgbBuffers[1].b->set(0, i+rowOffset, j+colOffset);
+      rgbBuffers[1].red->set(0, i+rowOffset, j+colOffset);
+      rgbBuffers[1].green->set(0, i+rowOffset, j+colOffset);
+      rgbBuffers[1].blue->set(0, i+rowOffset, j+colOffset);
     }
   }
 
+
   int rows_per_thread = image->rows() / args->threads;
+  int last_thread_id = args->threads - 1;
+  int leftover_rows = image->rows() % args->threads;
   std::cout << "Applying image filter across " << args->threads << " total threads\n";
   std::cout << "Each thread will process " << rows_per_thread << " rows each iteration\n";
 
-  // for(int i=0; i<image->rows(); i++)
-  // {
-  //   for(int j=0; j<image->columns(); j++)
-  //   {
-  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
-  //     "R=" << image->red_pixels()->get(i, j) <<
-  //     " G=" << image->green_pixels()->get(i, j) <<
-  //     " B=" << image->blue_pixels()->get(i, j) << "\n";
-  //   }
-  // }
-
-  // int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
   int thread_id = 0;
   int first_row = 0;
   int this_iter = 0;
   int source_buff_id = 0;
   int dest_buff_id = 0;
-  #pragma omp parallel private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id) shared(rgbBuffers) num_threads(args->threads)
+  #pragma omp parallel private(thread_id, first_row, this_iter, source_buff_id, dest_buff_id) shared(rgbBuffers, last_thread_id, leftover_rows) num_threads(args->threads)
   {
     thread_id = omp_get_thread_num();
-
     this_iter = 0;
     source_buff_id = (this_iter % 2);
     dest_buff_id = (this_iter + 1) % 2;
     first_row = (thread_id * rows_per_thread) + rowOffset;
 
-    // for(int i=0; i<args->iterations; i++)
+    #pragma omp critical
+    {
+      if (thread_id == last_thread_id && leftover_rows != 0) {
+        // When rows/threads has a remainder, process these remaining rows on the last thread
+        std::cout << "Thread " << thread_id << " is processing rows " <<
+          first_row << " to " << first_row + rows_per_thread - 1 <<
+          "+" << leftover_rows << " and all " << image->columns() << " columns" << std::endl;
+        rows_per_thread += leftover_rows;
+      } else {
+        std::cout << "Thread " << thread_id << " is processing rows " <<
+          first_row << " to " << first_row + rows_per_thread - 1 <<
+          " and all " << image->columns() << " columns" << std::endl;
+      }
+    }
+
+    #pragma omp barrier
     while (this_iter < args->iterations)
     {
       //source and dest array flip back and forth based on iteration
@@ -191,36 +184,36 @@ int main(int argc, char* argv[])
       dest_buff_id = (this_iter + 1) % 2;
 
       convolveNoAlloc(
-        rgbBuffers[source_buff_id].r,
+        rgbBuffers[source_buff_id].red,
         first_row,
         rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dest_buff_id].r,
+        rgbBuffers[dest_buff_id].red,
         first_row,
         colOffset,
         stencil->kernel
       );
 
       convolveNoAlloc(
-        rgbBuffers[source_buff_id].g,
+        rgbBuffers[source_buff_id].green,
         first_row,
         rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dest_buff_id].g,
+        rgbBuffers[dest_buff_id].green,
         first_row,
         colOffset,
         stencil->kernel
       );
 
       convolveNoAlloc(
-        rgbBuffers[source_buff_id].b,
+        rgbBuffers[source_buff_id].blue,
         first_row,
         rows_per_thread,
         colOffset,
         image->columns(),
-        rgbBuffers[dest_buff_id].b,
+        rgbBuffers[dest_buff_id].blue,
         first_row,
         colOffset,
         stencil->kernel
@@ -241,9 +234,9 @@ int main(int argc, char* argv[])
 
   RGBArraySet output;
 
-  output.r = std::make_shared<Array2d>(image->rows(), image->columns());
-  output.g = std::make_shared<Array2d>(image->rows(), image->columns());
-  output.b = std::make_shared<Array2d>(image->rows(), image->columns());
+  output.red = std::make_shared<Array2d>(image->rows(), image->columns());
+  output.green = std::make_shared<Array2d>(image->rows(), image->columns());
+  output.blue = std::make_shared<Array2d>(image->rows(), image->columns());
 
   // std::shared_ptr<Array2d> retArray = std::make_shared<Array2d>(source->rows, source->cols);
   for(int i=0; i<image->rows(); i++)
@@ -253,23 +246,12 @@ int main(int argc, char* argv[])
       int rowIndex = i + rowOffset;
       int colIndex = j + colOffset;
 
-      output.r->set(rgbBuffers[final_destination].r->get(rowIndex, colIndex), i, j);
-      output.g->set(rgbBuffers[final_destination].g->get(rowIndex, colIndex), i, j);
-      output.b->set(rgbBuffers[final_destination].b->get(rowIndex, colIndex), i, j);
+      output.red->set(rgbBuffers[final_destination].red->get(rowIndex, colIndex), i, j);
+      output.green->set(rgbBuffers[final_destination].green->get(rowIndex, colIndex), i, j);
+      output.blue->set(rgbBuffers[final_destination].blue->get(rowIndex, colIndex), i, j);
 
     }
   }
-
-  // for(int i=0; i<image->rows(); i++)
-  // {
-  //   for(int j=0; j<image->columns(); j++)
-  //   {
-  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
-  //     "R=" << output.r->get(i, j) <<
-  //     " G=" << output.g->get(i, j) <<
-  //     " B=" << output.b->get(i, j) << "\n";
-  //   }
-  // }
 
   std::cout<<"Processing is complete. Writing output image."<<std::endl;
 
@@ -278,9 +260,9 @@ int main(int argc, char* argv[])
     image->rows(),
     image->columns(),
     image->max_value(),
-    output.r,
-    output.g,
-    output.b);
+    output.red,
+    output.green,
+    output.blue);
 
   outputImage->save(args->output_filename);
 

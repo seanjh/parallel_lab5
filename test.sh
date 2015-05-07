@@ -2,7 +2,7 @@
 NETPBM_COMMAND="jpegtopnm"
 IMAGE="./img/skater.jpg"
 PPM_IMAGE="./img/skater.ppm"
-PGM_STENCIL="./stencils/gaussian.pgm"
+PGM_STENCIL="./stencils/box.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
 ITERATIONS=20
