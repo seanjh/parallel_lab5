@@ -114,9 +114,9 @@ int main(int argc, char* argv[])
   auto image = std::make_shared<Image>(args->image_filename);
   image->parse();
 
-  std::cout<<"Image red " << image->red_pixels() << std::endl;
-  std::cout<<"Image green " << image->green_pixels() << std::endl;
-  std::cout<<"Image blue " << image->blue_pixels() << std::endl;
+  // std::cout<<"Image red " << image->red_pixels() << std::endl;
+  // std::cout<<"Image green " << image->green_pixels() << std::endl;
+  // std::cout<<"Image blue " << image->blue_pixels() << std::endl;
 
   RGBArraySet rgbBuffers[2];
   for(int i=0; i<2; i++)
@@ -130,8 +130,9 @@ int main(int argc, char* argv[])
 
   const int rowOffset = (stencil->rows()/2);
   const int colOffset = (stencil->columns()/2);
-  std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
+  // std::cout << "rowOffset=" << rowOffset << " colOffset=" << colOffset << "\n";
 
+  // Initialize update buffers with image pixels
   for(int i=0; i<image->rows(); i++)
   {
     for(int j=0; j<image->columns(); j++)
@@ -181,11 +182,6 @@ int main(int argc, char* argv[])
     source_buff_id = (this_iter % 2);
     dest_buff_id = (this_iter + 1) % 2;
     first_row = (thread_id * rows_per_thread) + rowOffset;
-
-    #pragma omp critical
-    {
-      std::cout << "Thread: " << thread_id << " first row is " << first_row << std::endl;
-    }
 
     // for(int i=0; i<args->iterations; i++)
     while (this_iter < args->iterations)
