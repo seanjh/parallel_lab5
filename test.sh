@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 NETPBM_COMMAND="jpegtopnm"
-IMAGE="./img/doge.jpg"
-PPM_IMAGE="./img/doge.ppm"
+IMAGE="./img/skater.jpg"
+PPM_IMAGE="./img/skater.ppm"
 PGM_STENCIL="./stencils/gaussian.pgm"
 OUTPUT="./img/OUTPUT.ppm"
 FINAL_IMAGE="./img/OUTPUT.jpg"
 ITERATIONS=20
-THREADS=1
+THREADS=8
 
 echo
 echo Running NetPBM Original to PPM conversion: $NETPBM_COMMAND $IMAGE

@@ -156,16 +156,16 @@ int main(int argc, char* argv[])
   std::cout << "Applying image filter across " << args->threads << " total threads\n";
   std::cout << "Each thread will process " << rows_per_thread << " rows each iteration\n";
 
-  for(int i=0; i<image->rows(); i++)
-  {
-    for(int j=0; j<image->columns(); j++)
-    {
-      std::cout << "(row=" << i << ",col=" << j  << ") " <<
-      "R=" << image->red_pixels()->get(i, j) <<
-      " G=" << image->green_pixels()->get(i, j) <<
-      " B=" << image->blue_pixels()->get(i, j) << "\n";
-    }
-  }
+  // for(int i=0; i<image->rows(); i++)
+  // {
+  //   for(int j=0; j<image->columns(); j++)
+  //   {
+  //     std::cout << "(row=" << i << ",col=" << j  << ") " <<
+  //     "R=" << image->red_pixels()->get(i, j) <<
+  //     " G=" << image->green_pixels()->get(i, j) <<
+  //     " B=" << image->blue_pixels()->get(i, j) << "\n";
+  //   }
+  // }
 
   // int thread_id, first_row, this_iter, source_buff_id, dest_buff_id;
   int thread_id = 0;

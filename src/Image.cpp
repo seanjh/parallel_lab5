@@ -85,7 +85,7 @@ void Image::parse_body(std::ifstream& infile)
 
 void Image::parse_image_line(const std::string& line, int &row, int &column)
 {
-  std::cout << "Body line is " << line << std::endl;
+  // std::cout << "Body line is " << line << std::endl;
   const std::string whitespace ("\t\n\r ") ;
 
   int sample_num = 0;
@@ -105,12 +105,18 @@ void Image::parse_image_line(const std::string& line, int &row, int &column)
     index = line.find_first_of(whitespace, index);
   }
 
-  std::cout << "Finished parsing body line. (sample_num=" << sample_num <<
-    ", index=" << index <<
-    ", last_index=" << last_index <<
-    ", length()=" << line.size() <<
-    ")" <<
-    std::endl;
+  if (last_index < line.size()) {
+    value = std::stod(line.substr(last_index, line.size() - last_index));
+    set_sample_value(value, sample_num, row, column);
+    last_index = line.size();
+  }
+
+  // std::cout << "Finished parsing body line. (sample_num=" << sample_num <<
+  //   ", index=" << index <<
+  //   ", last_index=" << last_index <<
+  //   ", length()=" << line.size() <<
+  //   ")" <<
+  //   std::endl;
 
 }
 
@@ -124,21 +130,21 @@ void Image::set_sample_value(const double value, int &sample_num, int &row, int 
   switch (sample_num) {
     case 0:
       // RED
-      std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating RED [" << row << "][" << column << "] to " << value << "\n";
       red->set(value, row, column);
       break;
     case 1:
       // GREEN
-      std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating GREEN [" << row << "][" << column << "] to " << value << "\n";
       green->set(value, row, column);
       break;
     case 2:
       // BLUE
-      std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
+      // std::cout << "Updating BLUE [" << row << "][" << column << "] to " << value << "\n";
       blue->set(value, row, column);
 
       if (column == columns() - 1) {
-        std::cout << "Starting a new ROW\n";
+        // std::cout << "Starting a new ROW\n";
         // Start a new row here
         row++;
       }
